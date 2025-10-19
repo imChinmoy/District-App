@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "349539836373",
+    "project_id": "district-app-d32fa",
+    "storage_bucket": "district-app-d32fa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349539836373:android:8d71e5d08382aea8185d5c",
+        "android_client_info": {
+          "package_name": "com.example.district"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCq0DkQbbFbWhaKdLwBdBvN3mvRXYfGTlE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
