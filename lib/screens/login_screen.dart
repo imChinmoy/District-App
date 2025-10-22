@@ -1,5 +1,5 @@
 import 'package:district/colors.dart';
-import 'package:district/verification.dart';
+import 'package:district/features/auth/verification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';

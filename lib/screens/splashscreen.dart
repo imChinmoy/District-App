@@ -1,5 +1,5 @@
 
-import 'package:district/login_screen.dart';
+import 'package:district/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
 
