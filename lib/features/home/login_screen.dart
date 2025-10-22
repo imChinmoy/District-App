@@ -1,96 +1,77 @@
 import 'package:district/colors.dart';
+import 'package:district/features/home/home_screen.dart';
+import 'package:district/features/auth/verification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final isLoadingProvider = StateProvider<bool>((ref) => false);
+final currentPageProvider = StateProvider<int>((ref) => 10000);
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
-
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-
-class _LoginScreenState extends State<LoginScreen> {
-  final PageController _iconController = PageController(
+final iconControllerProvider = Provider<PageController>((ref) {
+  return PageController(
     viewportFraction: 0.4,
     initialPage: 10000,
   );
-  final PageController _textController = PageController(
+});
+
+final textControllerProvider = Provider<PageController>((ref) {
+  return PageController(
     viewportFraction: 1.0,
     initialPage: 10000,
   );
-  
-  Timer? _autoScrollTimer;
-  int _currentPage = 10000;
+});
 
+class LoginScreen extends ConsumerWidget {
+  const LoginScreen({super.key});
 
-  final List<Map<String, dynamic>> items = [
-    {
-      'icon': '🎬',
-      'iconColor': Color(0xFFAA66CC),  // Purple for icon
-      'textColor': Color(0xFF87CEEB),  // Sky blue for text
-      'label': 'Movies'
-    },
+  final List<Map<String, dynamic>> items = const [
     {
       'icon': '🎤',
-      'iconColor': Color(0xFFAA66CC),  // Purple for icon
-      'textColor': Color(0xFFFFFF00),  // Yellow for text
+      'iconColor': Color(0xFFAA66CC),
+      'textColor': Color(0xFFFFFF00),
       'label': 'Events'
     },
     {
       'icon': '🍽️',
-      'iconColor': Color(0xFFAA66CC),  // Purple for icon
-      'textColor': Color(0xFFFF8A80),  // Red for text
+      'iconColor': Color(0xFFAA66CC),
+      'textColor': Color(0xFFFF8A80),
       'label': 'Dining'
+    },
+    {
+      'icon': '🎬',
+      'iconColor': Color(0xFFAA66CC),
+      'textColor': Color(0xFF87CEEB),
+      'label': 'Movies'
+    },
+    {
+      'icon': '🏏',
+      'iconColor': Color(0xFFAA66CC),
+      'textColor': Color(0xFFFFFF00),
+      'label': 'Events'
+    },
+    {
+      'icon': '🍴',
+      'iconColor': Color(0xFFAA66CC),
+      'textColor': Color(0xFFFF8A80),
+      'label': 'Dining'
+    },
+    {
+      'icon': '🍿',
+      'iconColor': Color(0xFFAA66CC),
+      'textColor': Color(0xFF87CEEB),
+      'label': 'Movies'
     },
   ];
 
-
-
   @override
-  void initState() {
-    super.initState();
-    
-    _iconController.addListener(() {
-      if (_iconController.position.haveDimensions) {
-        final page = _iconController.page ?? 10000;
-        if (_textController.hasClients) {
-          _textController.jumpToPage(page.round());
-        }
-      }
-    });
-    
-    _startAutoScroll();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(isLoadingProvider);
+    final iconController = ref.watch(iconControllerProvider);
+    final textController = ref.watch(textControllerProvider);
 
-
-  void _startAutoScroll() {
-    _autoScrollTimer = Timer.periodic(Duration(seconds: 3), (timer) {
-      _currentPage++;
-      
-      _iconController.animateToPage(
-        _currentPage,
-        duration: Duration(milliseconds: 800),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
-
-
-  @override
-  void dispose() {
-    _autoScrollTimer?.cancel();
-    _iconController.dispose();
-    _textController.dispose();
-    super.dispose();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -119,20 +100,40 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
                         child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(107, 19, 19, 19),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                          ),
-                          child: Text(
-                            'Skip',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.grey[700],
-                            ),
+                          onPressed: isLoading ? null : () async {
+                          ref.read(isLoadingProvider.notifier).state = true;
+
+                        await Future.delayed(const Duration(milliseconds: 500));
+            
+                        if (context.mounted) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const HomeScreen()),
+                          );
+                         }
+                       },
+                       style: ElevatedButton.styleFrom(
+                         backgroundColor: const Color.fromARGB(107, 19, 19, 19),
+                         shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(50),
+                         ),
+                        ),
+                      child: isLoading
+                         ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                         )
+                        : Text(
+                          'Skip',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.grey[700],
+                           ),
                           ),
                         ),
                       ),
@@ -162,46 +163,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                     ),
-                
-                
+
                     SizedBox(height: 20),
                     Spacer(),
                 
+
                     // INFINITE CIRCULAR PAGEVIEW
-                    SizedBox(
-                      height: 150,
-                      child: PageView.builder(
-                        controller: _iconController,
-                        itemBuilder: (context, index) {
-                          int itemIndex = index % 3;
-                          
-                          return AnimatedBuilder(
-                            animation: _iconController,
-                            builder: (context, child) {
-                              double value = 1.0;
-                              if (_iconController.position.haveDimensions) {
-                                value = _iconController.page! - index;
-                                value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
-                              }
-                              
-                              return Transform.scale(
-                                scale: value,
-                                child: Opacity(
-                                  opacity: value,
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: _buildLocationPin(
-                              items[itemIndex]['icon'],
-                              items[itemIndex]['iconColor'],  // Changed from 'color' to 'iconColor'
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                    AutoScrollPageView(items: items),
                     Spacer(),
                 
+
+
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 40),
                       child: Text(
@@ -214,27 +186,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+
+
                     SizedBox(height: 10),
                     Spacer(),
+
+
                     SizedBox(
                       height: 20,
                       child: PageView.builder(
-                        controller: _textController,
+                        controller: textController,
                         physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          int itemIndex = index % 3;
+                          int itemIndex = index % 6;
                           return _buildTextWithSparkles(
                             items[itemIndex]['label'],
-                            items[itemIndex]['textColor'],  // Changed from 'color' to 'textColor'
+                            items[itemIndex]['textColor'],
                           );
                         },
                       ),
                     ),
                 
+
+
                 
                     SizedBox(height: 20),
-                
-                
                     Spacer(),
                     Container(
                       padding: EdgeInsets.all(24),
@@ -255,38 +231,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           SizedBox(height: 24),
-                
-                
                           Row(
                             children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey[800]!),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Text('🇮🇳', style: TextStyle(fontSize: 20)),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      '+91',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: AppColors.textcolor,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_drop_down,
-                                      color: AppColors.textcolor,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: 12),
                               Expanded(
                                 child: TextField(
                                   style: TextStyle(
@@ -294,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     color: AppColors.textcolor,
                                   ),
                                   decoration: InputDecoration(
-                                    hintText: '10-digit mobile number',
+                                    hintText: 'Enter your mail id',
                                     hintStyle: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey[600],
@@ -312,20 +258,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                   ),
-                                  keyboardType: TextInputType.phone,
+                                  keyboardType: TextInputType.emailAddress,
                                 ),
                               ),
                             ],
                           ),
-                
-                
                           SizedBox(height: 16),
-                
-                
+
+
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => Verify()),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 59, 59, 59),
+                              backgroundColor: const Color.fromARGB(255,59,59,59),
                               minimumSize: Size(double.infinity, 56),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
@@ -340,6 +289,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+
+
                 
                 
                           SizedBox(height: 24),
@@ -435,8 +386,117 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget _buildTextWithSparkles(String title, Color color) {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('✦', style: TextStyle(fontSize: 12, color: AppColors.textcolor)),
+          SizedBox(width: 8),
+          Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+          SizedBox(width: 8),
+          Text('✦', style: TextStyle(fontSize: 12, color: AppColors.textcolor)),
+        ],
+      ),
+    );
+  }
+}
 
-  // Location Pin with original shape
+// Separate widget for auto-scroll functionality
+class AutoScrollPageView extends ConsumerStatefulWidget {
+  const AutoScrollPageView({super.key, required this.items});
+  
+  final List<Map<String, dynamic>> items;
+
+  @override
+  ConsumerState<AutoScrollPageView> createState() => _AutoScrollPageViewState();
+}
+
+class _AutoScrollPageViewState extends ConsumerState<AutoScrollPageView> {
+  Timer? _autoScrollTimer;
+  late PageController _iconController;
+  late PageController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _iconController = ref.read(iconControllerProvider);
+    _textController = ref.read(textControllerProvider);
+    
+    _iconController.addListener(() {
+      if (_iconController.position.haveDimensions) {
+        final page = _iconController.page ?? 10000;
+        if (_textController.hasClients) {
+          _textController.jumpToPage(page.round());
+        }
+      }
+    });
+    
+    _startAutoScroll();
+  }
+
+  void _startAutoScroll() {
+    _autoScrollTimer = Timer.periodic(Duration(seconds: 2), (timer) {
+      final currentPage = ref.read(currentPageProvider.notifier).state++;
+      
+      _iconController.animateToPage(
+        currentPage,
+        duration: Duration(milliseconds: 800),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoScrollTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 150,
+      child: PageView.builder(
+        controller: _iconController,
+        itemBuilder: (context, index) {
+          int itemIndex = index % 6;
+          
+          return AnimatedBuilder(
+            animation: _iconController,
+            builder: (context, child) {
+              double value = 1.0;
+              if (_iconController.position.haveDimensions) {
+                value = _iconController.page! - index;
+                value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
+              }
+              
+              return Transform.scale(
+                scale: value,
+                child: Opacity(
+                  opacity: value,
+                  child: child,
+                ),
+              );
+            },
+            child: _buildLocationPin(
+              widget.items[itemIndex]['icon'],
+              widget.items[itemIndex]['iconColor'],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildLocationPin(String icon, Color color) {
     return Center(
       child: Container(
@@ -456,12 +516,10 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Location pin shape
               CustomPaint(
                 size: Size(120, 150),
                 painter: LocationPinPainter(color),
               ),
-              // Icon inside pin
               Positioned(
                 top: 30,
                 child: Text(
@@ -475,39 +533,13 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
-
-  Widget _buildTextWithSparkles(String title, Color color) {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('✦', style: TextStyle(fontSize: 12, color: AppColors.textcolor)),
-          SizedBox(width: 8),
-          Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: color,  // Now uses textColor from map
-            ),
-          ),
-          SizedBox(width: 8),
-          Text('✦', style: TextStyle(fontSize: 12, color: AppColors.textcolor)),
-        ],
-      ),
-    );
-  }
 }
-
 
 // Custom Painter for Location Pin Shape
 class LocationPinPainter extends CustomPainter {
   final Color color;
 
-
   LocationPinPainter(this.color);
-
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -522,7 +554,6 @@ class LocationPinPainter extends CustomPainter {
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
-
     final path = Path();
     
     final centerX = size.width / 2;
@@ -532,8 +563,6 @@ class LocationPinPainter extends CustomPainter {
     final coneTopY = semicircleTopY + semicircleRadius;
     final coneBottomY = size.height * 0.95;
 
-
-    // Draw semicircle (top half of circle)
     path.addArc(
       Rect.fromCircle(
         center: Offset(centerX, coneTopY),
@@ -543,18 +572,14 @@ class LocationPinPainter extends CustomPainter {
       3.14159,
     );
 
-
-    // Draw cone triangle
     path.lineTo(centerX - semicircleRadius, coneTopY);
     path.lineTo(centerX, coneBottomY);
     path.lineTo(centerX + semicircleRadius, coneTopY);
     
     path.close();
 
-
     canvas.drawPath(path, paint);
   }
-
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
