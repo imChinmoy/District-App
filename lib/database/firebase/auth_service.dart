@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../models/user_model.dart';
 
 class AuthService {
   static final _auth = FirebaseAuth.instance;
 
-  static Future<UserModel?> signUp(
+  Future<UserModel?> signUp(
     String email,
     String password,
     String name,
@@ -23,7 +24,31 @@ class AuthService {
         : null;
   }
 
-  static Future<UserModel?> login(String email, String password) async {
+  Future<UserModel?> signUsingGoogle() async {
+
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+    final result = await _auth.signInWithCredential(credential);
+    return result.user != null
+        ? UserModel(
+            uid: result.user!.uid,
+            name: result.user!.displayName ?? '',
+            email: result.user!.email!,
+          )
+        : null;
+  }
+
+  Future<UserModel?> saveUser( UserModel? user) async {
+    if (user == null) return null;
+    await _auth.currentUser?.updateDisplayName(user.name);
+    return user;
+  }
+
+  Future<UserModel?> login(String email, String password) async {
     final result = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
@@ -38,11 +63,11 @@ class AuthService {
         : null;
   }
 
-  static Future<void> logout() async {
+  Future<void> logout() async {
     await _auth.signOut();
   }
 
-  static UserModel? get currentUser {
+  UserModel? get currentUser {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return null;
     return UserModel(

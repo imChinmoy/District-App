@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:location/location.dart';
 import 'package:geocoding/geocoding.dart' as geo;
-import 'package:flutter_riverpod/legacy.dart';
 
 // Location Data Model
 class LocationData {

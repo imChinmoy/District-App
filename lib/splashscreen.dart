@@ -17,7 +17,7 @@ class _SplashscreenState extends ConsumerState<Splashscreen> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
+          MaterialPageRoute(builder: (context) => LoginScreen() as Widget),
         );
       }
     });

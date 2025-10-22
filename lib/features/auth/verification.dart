@@ -1,7 +1,7 @@
 import 'package:district/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
+
 
 final isVerifiedProvider = StateProvider<bool>((ref) => false);
 final isLoadingProvider = StateProvider<bool>((ref) => false);

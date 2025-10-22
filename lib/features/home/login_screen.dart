@@ -1,28 +1,21 @@
 import 'package:district/colors.dart';
 import 'package:district/features/home/home_screen.dart';
 import 'package:district/features/auth/verification.dart';
+import 'package:district/providers/auth_provider.dart'; // <-- make sure this path is correct
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final isLoadingProvider = StateProvider<bool>((ref) => false);
-final currentPageProvider = StateProvider<int>((ref) => 10000);
 
 final iconControllerProvider = Provider<PageController>((ref) {
-  return PageController(
-    viewportFraction: 0.4,
-    initialPage: 10000,
-  );
+  return PageController(viewportFraction: 0.4, initialPage: 10000);
 });
 
 final textControllerProvider = Provider<PageController>((ref) {
-  return PageController(
-    viewportFraction: 1.0,
-    initialPage: 10000,
-  );
+  return PageController(viewportFraction: 1.0, initialPage: 10000);
 });
+
+final currentPageProvider = StateProvider<int>((ref) => 10000);
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
@@ -32,39 +25,52 @@ class LoginScreen extends ConsumerWidget {
       'icon': '🎤',
       'iconColor': Color(0xFFAA66CC),
       'textColor': Color(0xFFFFFF00),
-      'label': 'Events'
+      'label': 'Events',
     },
     {
       'icon': '🍽️',
       'iconColor': Color(0xFFAA66CC),
       'textColor': Color(0xFFFF8A80),
-      'label': 'Dining'
+      'label': 'Dining',
     },
     {
       'icon': '🎬',
       'iconColor': Color(0xFFAA66CC),
       'textColor': Color(0xFF87CEEB),
-      'label': 'Movies'
+      'label': 'Movies',
     },
     {
       'icon': '🏏',
       'iconColor': Color(0xFFAA66CC),
       'textColor': Color(0xFFFFFF00),
-      'label': 'Events'
+      'label': 'Sports',
     },
     {
       'icon': '🍴',
       'iconColor': Color(0xFFAA66CC),
       'textColor': Color(0xFFFF8A80),
-      'label': 'Dining'
-    },
-    {
-      'icon': '🍿',
-      'iconColor': Color(0xFFAA66CC),
-      'textColor': Color(0xFF87CEEB),
-      'label': 'Movies'
+      'label': 'Food',
     },
   ];
+
+  Future<void> _signInWithGoogle(BuildContext context, WidgetRef ref) async {
+    ref.read(isLoadingProvider.notifier).state = true;
+    try {
+      await ref.read(authProvider.notifier).signInWithGoogle();
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Google Sign-In failed: $e')));
+    } finally {
+      ref.read(isLoadingProvider.notifier).state = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,62 +85,75 @@ class LoginScreen extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.center,
-            colors: [
-              AppColors.backgroundColor1,
-              AppColors.backgrondColor2,
-            ],
+            colors: [AppColors.backgroundColor1, AppColors.backgrondColor2],
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height - 
-                         MediaQuery.of(context).padding.top,
-            ),
+                minHeight:
+                    MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top,
+              ),
               child: IntrinsicHeight(
                 child: Column(
                   children: [
                     Align(
                       alignment: Alignment.topRight,
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
+                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
                         child: ElevatedButton(
-                          onPressed: isLoading ? null : () async {
-                          ref.read(isLoadingProvider.notifier).state = true;
-
-                        await Future.delayed(const Duration(milliseconds: 500));
-            
-                        if (context.mounted) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const HomeScreen()),
-                          );
-                         }
-                       },
-                       style: ElevatedButton.styleFrom(
-                         backgroundColor: const Color.fromARGB(107, 19, 19, 19),
-                         shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(50),
-                         ),
-                        ),
-                      child: isLoading
-                         ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                         )
-                        : Text(
-                          'Skip',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.grey[700],
-                           ),
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  ref.read(isLoadingProvider.notifier).state =
+                                      true;
+                                  await Future.delayed(
+                                    const Duration(milliseconds: 500),
+                                  );
+                                  if (context.mounted) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const HomeScreen(),
+                                      ),
+                                    );
+                                  }
+                                  ref.read(isLoadingProvider.notifier).state =
+                                      false;
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              107,
+                              19,
+                              19,
+                              19,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
                           ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  'Skip',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
                         ),
                       ),
                     ),
@@ -150,7 +169,7 @@ class LoginScreen extends ConsumerWidget {
                               height: 1.0,
                             ),
                           ),
-                          SizedBox(height: 1),
+                          const SizedBox(height: 1),
                           Text(
                             'BY ZOMATO',
                             style: GoogleFonts.montserrat(
@@ -163,19 +182,12 @@ class LoginScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
-
-                    SizedBox(height: 20),
-                    Spacer(),
-                
-
-                    // INFINITE CIRCULAR PAGEVIEW
+                    const SizedBox(height: 20),
+                    const Spacer(),
                     AutoScrollPageView(items: items),
-                    Spacer(),
-                
-
-
+                    const Spacer(),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: Text(
                         'One app for all your going out plans',
                         textAlign: TextAlign.center,
@@ -186,19 +198,15 @@ class LoginScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-
-
-                    SizedBox(height: 10),
-                    Spacer(),
-
-
+                    const SizedBox(height: 10),
+                    const Spacer(),
                     SizedBox(
                       height: 20,
                       child: PageView.builder(
                         controller: textController,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          int itemIndex = index % 6;
+                          int itemIndex = index % items.length;
                           return _buildTextWithSparkles(
                             items[itemIndex]['label'],
                             items[itemIndex]['textColor'],
@@ -206,16 +214,12 @@ class LoginScreen extends ConsumerWidget {
                         },
                       ),
                     ),
-                
-
-
-                
-                    SizedBox(height: 20),
-                    Spacer(),
+                    const SizedBox(height: 20),
+                    const Spacer(),
                     Container(
-                      padding: EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 19, 19, 19),
+                      padding: const EdgeInsets.all(24),
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 19, 19, 19),
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(24),
                         ),
@@ -230,7 +234,7 @@ class LoginScreen extends ConsumerWidget {
                               color: AppColors.textcolor,
                             ),
                           ),
-                          SizedBox(height: 24),
+                          const SizedBox(height: 24),
                           Row(
                             children: [
                               Expanded(
@@ -263,19 +267,24 @@ class LoginScreen extends ConsumerWidget {
                               ),
                             ],
                           ),
-                          SizedBox(height: 16),
-
-
+                          const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => Verify()),
+                                MaterialPageRoute(
+                                  builder: (context) => const Verify(),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255,59,59,59),
-                              minimumSize: Size(double.infinity, 56),
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                59,
+                                59,
+                                59,
+                              ),
+                              minimumSize: const Size(double.infinity, 56),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -289,18 +298,14 @@ class LoginScreen extends ConsumerWidget {
                               ),
                             ),
                           ),
-
-
-                
-                
-                          SizedBox(height: 24),
-                
-                
+                          const SizedBox(height: 24),
                           Row(
                             children: [
                               Expanded(child: Divider(color: Colors.grey[800])),
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 child: Text(
                                   'OR',
                                   style: TextStyle(
@@ -312,16 +317,14 @@ class LoginScreen extends ConsumerWidget {
                               Expanded(child: Divider(color: Colors.grey[800])),
                             ],
                           ),
-                
-                
-                          SizedBox(height: 24),
-                
-                
+                          const SizedBox(height: 24),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: isLoading
+                                ? null
+                                : () => _signInWithGoogle(context, ref),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.textcolor,
-                              minimumSize: Size(double.infinity, 56),
+                              minimumSize: const Size(double.infinity, 56),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -329,23 +332,28 @@ class LoginScreen extends ConsumerWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SizedBox(width: 12),
-                                Text(
-                                  'Login with Google',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.black,
+                                if (isLoading)
+                                  const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                else
+                                  const Text(
+                                    'Login with Google',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ),
-                
-                
-                          SizedBox(height: 24),
-                
-                
+                          const SizedBox(height: 24),
                           Text.rich(
                             TextSpan(
                               text: 'By continuing, you agree to our\n',
@@ -361,7 +369,7 @@ class LoginScreen extends ConsumerWidget {
                                     color: AppColors.textcolor,
                                   ),
                                 ),
-                                TextSpan(text: '     '),
+                                const TextSpan(text: '     '),
                                 TextSpan(
                                   text: 'Privacy Policy',
                                   style: TextStyle(
@@ -392,7 +400,7 @@ class LoginScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text('✦', style: TextStyle(fontSize: 12, color: AppColors.textcolor)),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             title,
             style: GoogleFonts.inter(
@@ -401,7 +409,7 @@ class LoginScreen extends ConsumerWidget {
               color: color,
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text('✦', style: TextStyle(fontSize: 12, color: AppColors.textcolor)),
         ],
       ),
@@ -409,10 +417,9 @@ class LoginScreen extends ConsumerWidget {
   }
 }
 
-// Separate widget for auto-scroll functionality
+// ================= AUTO SCROLL COMPONENT =================
 class AutoScrollPageView extends ConsumerStatefulWidget {
   const AutoScrollPageView({super.key, required this.items});
-  
   final List<Map<String, dynamic>> items;
 
   @override
@@ -427,10 +434,9 @@ class _AutoScrollPageViewState extends ConsumerState<AutoScrollPageView> {
   @override
   void initState() {
     super.initState();
-    
     _iconController = ref.read(iconControllerProvider);
     _textController = ref.read(textControllerProvider);
-    
+
     _iconController.addListener(() {
       if (_iconController.position.haveDimensions) {
         final page = _iconController.page ?? 10000;
@@ -439,17 +445,16 @@ class _AutoScrollPageViewState extends ConsumerState<AutoScrollPageView> {
         }
       }
     });
-    
     _startAutoScroll();
   }
 
   void _startAutoScroll() {
-    _autoScrollTimer = Timer.periodic(Duration(seconds: 2), (timer) {
-      final currentPage = ref.read(currentPageProvider.notifier).state++;
-      
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      final notifier = ref.read(currentPageProvider.notifier);
+      notifier.state++;
       _iconController.animateToPage(
-        currentPage,
-        duration: Duration(milliseconds: 800),
+        notifier.state,
+        duration: const Duration(milliseconds: 800),
         curve: Curves.easeInOut,
       );
     });
@@ -468,8 +473,7 @@ class _AutoScrollPageViewState extends ConsumerState<AutoScrollPageView> {
       child: PageView.builder(
         controller: _iconController,
         itemBuilder: (context, index) {
-          int itemIndex = index % 6;
-          
+          int itemIndex = index % widget.items.length;
           return AnimatedBuilder(
             animation: _iconController,
             builder: (context, child) {
@@ -478,13 +482,9 @@ class _AutoScrollPageViewState extends ConsumerState<AutoScrollPageView> {
                 value = _iconController.page! - index;
                 value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
               }
-              
               return Transform.scale(
                 scale: value,
-                child: Opacity(
-                  opacity: value,
-                  child: child,
-                ),
+                child: Opacity(opacity: value, child: child),
               );
             },
             child: _buildLocationPin(
@@ -509,7 +509,7 @@ class _AutoScrollPageViewState extends ConsumerState<AutoScrollPageView> {
               color.withOpacity(0.3),
               Colors.transparent,
             ],
-            stops: [0.3, 0.6, 1.0],
+            stops: const [0.3, 0.6, 1.0],
           ),
         ),
         child: Center(
@@ -517,15 +517,12 @@ class _AutoScrollPageViewState extends ConsumerState<AutoScrollPageView> {
             alignment: Alignment.center,
             children: [
               CustomPaint(
-                size: Size(120, 150),
+                size: const Size(120, 150),
                 painter: LocationPinPainter(color),
               ),
               Positioned(
                 top: 30,
-                child: Text(
-                  icon,
-                  style: TextStyle(fontSize: 50),
-                ),
+                child: Text(icon, style: const TextStyle(fontSize: 50)),
               ),
             ],
           ),
@@ -535,10 +532,8 @@ class _AutoScrollPageViewState extends ConsumerState<AutoScrollPageView> {
   }
 }
 
-// Custom Painter for Location Pin Shape
 class LocationPinPainter extends CustomPainter {
   final Color color;
-
   LocationPinPainter(this.color);
 
   @override
@@ -547,15 +542,11 @@ class LocationPinPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [
-          color.withOpacity(0.95),
-          color,
-        ],
+        colors: [color.withOpacity(0.95), color],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
     final path = Path();
-    
     final centerX = size.width / 2;
     final coneWidth = size.width * 0.9;
     final semicircleRadius = coneWidth / 2;
@@ -575,7 +566,6 @@ class LocationPinPainter extends CustomPainter {
     path.lineTo(centerX - semicircleRadius, coneTopY);
     path.lineTo(centerX, coneBottomY);
     path.lineTo(centerX + semicircleRadius, coneTopY);
-    
     path.close();
 
     canvas.drawPath(path, paint);

@@ -1,35 +1,65 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
-import '../data/firebase/auth_service.dart';
+import '../database/firebase/auth_service.dart';
 import '../models/user_model.dart';
+import '../database/repository/user_repo.dart';
+
+
+// Repository provider (single instance)
+final userRepositoryProvider = Provider<UserRepository>(
+  (ref) => UserRepository(AuthService()),
+);
 
 final authProvider = StateNotifierProvider<AuthController, UserModel?>(
-  (ref) => AuthController(),
+  (ref) => AuthController(ref.read(userRepositoryProvider)),
 );
 
 class AuthController extends StateNotifier<UserModel?> {
-  AuthController() : super(_getInitialUser());
+  final UserRepository _userRepository;
 
-  static UserModel? _getInitialUser() {
-    return AuthService.currentUser;
-  }
+  AuthController(this._userRepository)
+      : super(_userRepository.getCurrentUser());
 
+  // Email login
   Future<void> login(String email, String password) async {
-    final user = await AuthService.login(email, password);
-    if (user != null) {
-      state = user;
+    try {
+      final user = await _userRepository.login(email, password);
+      if (user != null) state = user;
+    } catch (e) {
+      print('Login error: $e');
+      rethrow;
     }
   }
 
+  // Email signup
   Future<void> signUp(String email, String password, String name) async {
-    final user = await AuthService.signUp(email, password, name);
-    if (user != null) {
-      state = user;
+    try {
+      final user = await _userRepository.signUp(email, password, name);
+      if (user != null) state = user;
+    } catch (e) {
+      print('Signup error: $e');
+      rethrow;
     }
   }
 
+  // Google Sign-In
+  Future<void> signInWithGoogle() async {
+    try {
+      final user = await _userRepository.signInWithGoogle();
+      state = user;
+    } catch (e) {
+      print('Google sign-in error: $e');
+      rethrow;
+    }
+  }
+
+  // Logout
   Future<void> logout() async {
-    await AuthService.logout();
-    state = null;
+    try {
+      await _userRepository.logout();
+      state = null;
+    } catch (e) {
+      print('Logout error: $e');
+      rethrow;
+    }
   }
 }
