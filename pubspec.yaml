@@ -35,8 +35,10 @@ dependencies:
   google_sign_in: ^5.0.7
   flutter:
     sdk: flutter
-  flutter_riverpod: ^2.5.1
   google_fonts: ^6.3.2
+  flutter_riverpod: ^3.0.3
+  location: ^8.0.1
+  geocoding: ^3.0.0
 
 dev_dependencies:
 
