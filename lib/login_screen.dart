@@ -1,4 +1,5 @@
 import 'package:district/colors.dart';
+import 'package:district/verification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
@@ -14,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _isLoading = false;
   final PageController _iconController = PageController(
     viewportFraction: 0.4,
     initialPage: 10000,
@@ -119,20 +121,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
                         child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(107, 19, 19, 19),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                          ),
-                          child: Text(
-                            'Skip',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.grey[700],
-                            ),
+                          onPressed: _isLoading ? null : () async {
+                          setState(() {
+                            _isLoading = true;
+                         });
+
+                        await Future.delayed(const Duration(milliseconds: 500));
+            
+                        if (context.mounted) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Verify()),
+                          );
+                         }
+                       },
+                       style: ElevatedButton.styleFrom(
+                         backgroundColor: const Color.fromARGB(107, 19, 19, 19),
+                         shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(50),
+                         ),
+                        ),
+                      child: _isLoading
+                         ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                         )
+                        : Text(
+                          'Skip',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.grey[700],
+                           ),
                           ),
                         ),
                       ),
@@ -259,34 +283,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 
                           Row(
                             children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey[800]!),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Text('🇮🇳', style: TextStyle(fontSize: 20)),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      '+91',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: AppColors.textcolor,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_drop_down,
-                                      color: AppColors.textcolor,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: 12),
                               Expanded(
                                 child: TextField(
                                   style: TextStyle(
@@ -294,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     color: AppColors.textcolor,
                                   ),
                                   decoration: InputDecoration(
-                                    hintText: '10-digit mobile number',
+                                    hintText: 'Enter your mail id',
                                     hintStyle: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey[600],
@@ -312,20 +308,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                   ),
-                                  keyboardType: TextInputType.phone,
+                                  keyboardType: TextInputType.emailAddress,
                                 ),
                               ),
                             ],
                           ),
-                
-                
+
                           SizedBox(height: 16),
-                
-                
+
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Verify();
+                            },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 59, 59, 59),
+                              backgroundColor: const Color.fromARGB(255,59,59,59),
                               minimumSize: Size(double.infinity, 56),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
@@ -340,6 +336,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+
                 
                 
                           SizedBox(height: 24),
