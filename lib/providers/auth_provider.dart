@@ -4,7 +4,7 @@ import '../models/user_model.dart';
 import '../database/repository/user_repo.dart';
 
 
-// Repository provider (single instance)
+
 final userRepositoryProvider = Provider<UserRepository>(
   (ref) => UserRepository(AuthService()),
 );
@@ -19,7 +19,7 @@ class AuthController extends StateNotifier<UserModel?> {
   AuthController(this._userRepository)
       : super(_userRepository.getCurrentUser());
 
-  // Email login
+
   Future<void> login(String email, String password) async {
     try {
       final user = await _userRepository.login(email, password);
@@ -30,7 +30,6 @@ class AuthController extends StateNotifier<UserModel?> {
     }
   }
 
-  // Email signup
   Future<void> signUp(String email, String password, String name) async {
     try {
       final user = await _userRepository.signUp(email, password, name);
@@ -41,7 +40,6 @@ class AuthController extends StateNotifier<UserModel?> {
     }
   }
 
-  // Google Sign-In
   Future<void> signInWithGoogle() async {
     try {
       final user = await _userRepository.signInWithGoogle();
@@ -52,7 +50,6 @@ class AuthController extends StateNotifier<UserModel?> {
     }
   }
 
-  // Logout
   Future<void> logout() async {
     try {
       await _userRepository.logout();

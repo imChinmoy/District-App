@@ -1,20 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/event_model.dart';
+import '../../models/event/event_model.dart';
+import '../../models/dining/dining_model.dart';
+import '../../models/movie/movie_model.dart';
 
-class FirestoreService {
+class AppDatabase {
   static final _db = FirebaseFirestore.instance;
 
   static Future<List<EventModel>> getAllEvents() async {
-    final snapshot = await _db.collection('events').get();
-    return snapshot.docs.map((doc) => EventModel.fromMap(doc.data())).toList();
+    final data = await _db.collection('Events').get();
+    return data.docs.map((e) => EventModel.fromMap(e.data())).toList();
   }
 
-  static Future<EventModel?> getEventById(String id) async {
-    final doc = await _db.collection('events').doc(id).get();
+  Future<EventModel?> findEvent(String id) async {
+    final doc = await _db.collection('Events').doc(id).get();
     return doc.exists ? EventModel.fromMap(doc.data()!) : null;
   }
 
-  static Future<void> addEvent(EventModel event) async {
-    await _db.collection('events').doc(event.id).set(event.toMap());
+
+
+  Future<List<DiningModel>> getAllDiningPlaces() async {
+    final data = await _db.collection('DiningPlaces').get();
+    return data.docs.map((e) => DiningModel.fromMap(e.data())).toList();
   }
+
+  Future<DiningModel?> findDining(String id) async {
+    final doc = await _db.collection('DiningPlaces').doc(id).get();
+    return doc.exists ? DiningModel.fromMap(doc.data()!) : null;
+  }
+
+
+
+  Future<List<MovieModel>> getAllMovies() async {
+    final data = await _db.collection('Movies').get();
+    return data.docs.map((e) => MovieModel.fromMap(e.data())).toList();
+  }
+
+  Future<MovieModel?> findMovie(String id) async {
+    final doc = await _db.collection('Movies').doc(id).get();
+    return doc.exists ? MovieModel.fromMap(doc.data()!) : null;
+  }
+
 }
