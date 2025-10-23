@@ -6,7 +6,7 @@ import '../../models/movie/movie_model.dart';
 class AppDatabase {
   static final _db = FirebaseFirestore.instance;
 
-  static Future<List<EventModel>> getAllEvents() async {
+  Future<List<EventModel>> getAllEvents() async {
     final data = await _db.collection('Events').get();
     return data.docs.map((e) => EventModel.fromMap(e.data())).toList();
   }
