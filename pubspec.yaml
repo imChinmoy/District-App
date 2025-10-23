@@ -39,6 +39,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   location: ^8.0.1
   geocoding: ^3.0.0
+  animated_text_kit: ^4.3.0
 
 dev_dependencies:
 
