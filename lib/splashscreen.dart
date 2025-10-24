@@ -1,7 +1,7 @@
 import 'package:district/features/home/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:go_router/go_router.dart';
 class Splashscreen extends ConsumerStatefulWidget {
   const Splashscreen({super.key});
 
@@ -15,10 +15,7 @@ class _SplashscreenState extends ConsumerState<Splashscreen> {
     super.initState();
     Future.delayed(Duration(seconds: 2), () {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen() as Widget),
-        );
+        context.go('/login');
       }
     });
   }

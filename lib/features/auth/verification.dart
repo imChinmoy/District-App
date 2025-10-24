@@ -1,4 +1,4 @@
-import 'package:district/colors.dart';
+import 'package:district/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

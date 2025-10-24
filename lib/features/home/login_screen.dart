@@ -1,4 +1,4 @@
-import 'package:district/colors.dart';
+import 'package:district/utils/colors.dart';
 import 'package:district/features/home/home_screen.dart';
 import 'package:district/features/auth/verification.dart';
 import 'package:district/providers/auth_provider.dart'; // <-- make sure this path is correct
