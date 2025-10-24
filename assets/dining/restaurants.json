@@ -1,0 +1,847 @@
+{
+  "restaurants": [
+    {
+      "id": "rest_001",
+      "name": "Fashiontv Cafe",
+      "address": "Phoenix United Mall, Gomti Nagar Extension",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226010",
+      "phoneNumber": "+91-522-4567890",
+      "email": "info@fashiontvcafe.com",
+      "description": "Experience luxury dining with a blend of international cuisine and glamorous ambiance. Perfect for special occasions and celebrations.",
+      "images": [
+        "assets/image/dine2.png",
+        "assets/image/dining.png",
+        "assets/image/dine2.png"
+      ],
+      "menu": [
+        {
+          "id": "item_001",
+          "name": "Bruschetta",
+          "description": "Toasted bread with tomatoes, garlic, and basil",
+          "price": 350.0,
+          "category": "starter",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_002",
+          "name": "Chicken Wings",
+          "description": "Spicy buffalo wings with ranch dip",
+          "price": 450.0,
+          "category": "starter",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_003",
+          "name": "Margherita Pizza",
+          "description": "Classic Italian pizza with mozzarella and basil",
+          "price": 550.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_004",
+          "name": "Grilled Chicken Steak",
+          "description": "Tender grilled chicken with mashed potatoes",
+          "price": 750.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_005",
+          "name": "Cappuccino",
+          "description": "Rich Italian coffee with steamed milk",
+          "price": 200.0,
+          "category": "beverage",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        }
+      ],
+      "facilities": [
+        "WiFi",
+        "Parking",
+        "Air Conditioning",
+        "Outdoor Seating",
+        "Live Music",
+        "Bar Available"
+      ],
+      "rating": 4.5,
+      "totalReviews": 245,
+      "reviews": [
+        {
+          "userId": "user_101",
+          "userName": "Rahul Sharma",
+          "userProfilePic": "assets/image/dine2.png",
+          "rating": 5.0,
+          "comment": "Amazing ambiance and delicious food! Perfect for date nights.",
+          "date": "2025-10-20T18:30:00Z"
+        },
+        {
+          "userId": "user_102",
+          "userName": "Priya Singh",
+          "userProfilePic": "assets/image/dine2.png",
+          "rating": 4.0,
+          "comment": "Great place but a bit expensive. Food quality is top-notch.",
+          "date": "2025-10-18T20:15:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "11:00 AM",
+      "closingTime": "11:00 PM",
+      "averageCostForTwo": 1500.0
+    },
+    {
+      "id": "rest_002",
+      "name": "Kaleidoscope",
+      "address": "Riverside Mall, Gomti Nagar",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226010",
+      "phoneNumber": "+91-522-4567891",
+      "email": "contact@kaleidoscope.com",
+      "description": "Multi-cuisine restaurant offering Indian, Chinese, and Continental dishes with a vibrant atmosphere.",
+      "images": [
+        "assets/image/dine2.png",
+        "assets/image/dining.png"
+      ],
+      "menu": [
+        {
+          "id": "item_006",
+          "name": "Paneer Butter Masala",
+          "description": "Cottage cheese in rich tomato gravy",
+          "price": 380.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_007",
+          "name": "Chicken Tikka Masala",
+          "description": "Grilled chicken in spicy masala gravy",
+          "price": 450.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_008",
+          "name": "Veg Hakka Noodles",
+          "description": "Stir-fried noodles with vegetables",
+          "price": 250.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_009",
+          "name": "Chocolate Brownie",
+          "description": "Warm brownie with vanilla ice cream",
+          "price": 220.0,
+          "category": "dessert",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        }
+      ],
+      "facilities": [
+        "WiFi",
+        "Parking",
+        "Air Conditioning",
+        "Family Friendly",
+        "Home Delivery"
+      ],
+      "rating": 4.3,
+      "totalReviews": 189,
+      "reviews": [
+        {
+          "userId": "user_103",
+          "userName": "Amit Kumar",
+          "userProfilePic": "assets/image/dine2.png",
+          "rating": 4.5,
+          "comment": "Excellent food variety. The Chinese dishes are particularly good.",
+          "date": "2025-10-19T19:45:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "12:00 PM",
+      "closingTime": "11:30 PM",
+      "averageCostForTwo": 1200.0
+    },
+    {
+      "id": "rest_003",
+      "name": "Cafe Delhi Heights",
+      "address": "Sahara Ganj Mall, Hazratganj",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226001",
+      "phoneNumber": "+91-522-4567892",
+      "email": "info@cafedelhiheights.com",
+      "description": "Popular cafe chain known for its delicious continental and Italian cuisine with a cozy ambiance.",
+      "images": [
+        "assets/image/dine2.png",
+        "assets/image/dining.png"
+      ],
+      "menu": [
+        {
+          "id": "item_010",
+          "name": "English Breakfast",
+          "description": "Eggs, bacon, sausages, beans, and toast",
+          "price": 450.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_011",
+          "name": "Pancakes",
+          "description": "Fluffy pancakes with maple syrup",
+          "price": 320.0,
+          "category": "dessert",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_012",
+          "name": "Penne Arrabiata",
+          "description": "Penne pasta in spicy tomato sauce",
+          "price": 380.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_013",
+          "name": "Classic Burger",
+          "description": "Beef patty with cheese and veggies",
+          "price": 350.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        }
+      ],
+      "facilities": [
+        "WiFi",
+        "Air Conditioning",
+        "Outdoor Seating",
+        "Pet Friendly",
+        "Wheelchair Accessible"
+      ],
+      "rating": 4.6,
+      "totalReviews": 312,
+      "reviews": [
+        {
+          "userId": "user_104",
+          "userName": "Sneha Gupta",
+          "userProfilePic": "assets/image/dine2.png",
+          "rating": 5.0,
+          "comment": "Love this place! The pancakes are to die for. Great coffee too.",
+          "date": "2025-10-22T10:30:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "09:00 AM",
+      "closingTime": "11:00 PM",
+      "averageCostForTwo": 1000.0
+    },
+    {
+      "id": "rest_004",
+      "name": "Chaoco",
+      "address": "MG Road, Hazratganj",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226001",
+      "phoneNumber": "+91-522-4567893",
+      "email": "hello@chaoco.com",
+      "description": "Specialty chocolate cafe with amazing matcha drinks, desserts, and light bites.",
+      "images": [
+        "assets/image/dine2.png",
+        "assets/image/dining.png"
+      ],
+      "menu": [
+        {
+          "id": "item_014",
+          "name": "Matcha Latte",
+          "description": "Premium Japanese matcha with steamed milk",
+          "price": 280.0,
+          "category": "beverage",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_015",
+          "name": "Hot Chocolate",
+          "description": "Rich Belgian chocolate drink",
+          "price": 250.0,
+          "category": "beverage",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_016",
+          "name": "Iced Matcha",
+          "description": "Refreshing iced matcha latte",
+          "price": 300.0,
+          "category": "beverage",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_017",
+          "name": "Matcha Cake",
+          "description": "Soft matcha sponge cake with cream",
+          "price": 350.0,
+          "category": "dessert",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        }
+      ],
+      "facilities": [
+        "WiFi",
+        "Air Conditioning",
+        "Instagram Worthy",
+        "Takeaway",
+        "Cozy Seating"
+      ],
+      "rating": 4.7,
+      "totalReviews": 156,
+      "reviews": [
+        {
+          "userId": "user_106",
+          "userName": "Ayesha Khan",
+          "userProfilePic": "assets/image/dine2.png",
+          "rating": 5.0,
+          "comment": "Best matcha in Lucknow! The ambiance is so cute and Instagram-worthy.",
+          "date": "2025-10-23T16:00:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "10:00 AM",
+      "closingTime": "10:00 PM",
+      "averageCostForTwo": 800.0
+    },
+    {
+      "id": "rest_005",
+      "name": "The Mughal's Dastarkhwan",
+      "address": "Chowk Area, Old Lucknow",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226003",
+      "phoneNumber": "+91-522-4567895",
+      "email": "info@mughalsdarstarkhwan.com",
+      "description": "Authentic Awadhi cuisine restaurant serving traditional Lucknowi delicacies like biryani, kebabs, and korma in a royal ambiance.",
+      "images": [
+        "assets/image/dine2.png",
+        "assets/image/dining.png"
+      ],
+      "menu": [
+        {
+          "id": "item_024",
+          "name": "Galouti Kebab",
+          "description": "Melt-in-mouth minced meat kebabs - Lucknow specialty",
+          "price": 480.0,
+          "category": "starter",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_025",
+          "name": "Paneer Tikka",
+          "description": "Grilled cottage cheese marinated in spices",
+          "price": 380.0,
+          "category": "starter",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_027",
+          "name": "Awadhi Chicken Biryani",
+          "description": "Fragrant basmati rice with tender chicken pieces",
+          "price": 450.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_029",
+          "name": "Veg Biryani",
+          "description": "Mixed vegetables with saffron rice",
+          "price": 350.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_030",
+          "name": "Shahi Tukda",
+          "description": "Bread pudding with rabri and dry fruits",
+          "price": 180.0,
+          "category": "dessert",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        }
+      ],
+      "facilities": [
+        "Parking",
+        "Air Conditioning",
+        "Family Friendly",
+        "Traditional Seating",
+        "Home Delivery"
+      ],
+      "rating": 4.8,
+      "totalReviews": 567,
+      "reviews": [
+        {
+          "userId": "user_109",
+          "userName": "Arjun Kapoor",
+          "userProfilePic": "assets/image/dine2.png",
+          "rating": 5.0,
+          "comment": "Best Awadhi food in Lucknow! The Galouti Kebabs literally melt in your mouth.",
+          "date": "2025-10-22T20:30:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "12:00 PM",
+      "closingTime": "11:30 PM",
+      "averageCostForTwo": 1400.0
+    },
+    {
+      "id": "rest_006",
+      "name": "Moti Mahal Delux",
+      "address": "Hazratganj Main Road",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226001",
+      "phoneNumber": "+91-522-4567896",
+      "email": "contact@motimahaldelux.com",
+      "description": "Famous for authentic North Indian tandoori dishes and rich butter chicken. A legacy of culinary excellence since decades.",
+      "images": [
+        "assets/image/dining.png",
+        "assets/image/dine2.png"
+      ],
+      "menu": [
+        {
+          "id": "item_031",
+          "name": "Butter Chicken",
+          "description": "Signature creamy tomato chicken curry",
+          "price": 520.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_032",
+          "name": "Dal Makhani",
+          "description": "Slow-cooked black lentils with butter and cream",
+          "price": 320.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_033",
+          "name": "Tandoori Chicken",
+          "description": "Clay oven roasted marinated chicken",
+          "price": 480.0,
+          "category": "starter",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_034",
+          "name": "Garlic Naan",
+          "description": "Soft flatbread topped with garlic and butter",
+          "price": 80.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_035",
+          "name": "Gulab Jamun",
+          "description": "Sweet dumplings in sugar syrup",
+          "price": 150.0,
+          "category": "dessert",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        }
+      ],
+      "facilities": [
+        "WiFi",
+        "Parking",
+        "Air Conditioning",
+        "Family Friendly",
+        "Valet Parking"
+      ],
+      "rating": 4.4,
+      "totalReviews": 421,
+      "reviews": [
+        {
+          "userId": "user_110",
+          "userName": "Vikram Malhotra",
+          "userProfilePic": "assets/image/dining.png",
+          "rating": 4.5,
+          "comment": "The butter chicken here is legendary! Must try for anyone visiting Lucknow.",
+          "date": "2025-10-21T19:20:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "12:00 PM",
+      "closingTime": "11:00 PM",
+      "averageCostForTwo": 1300.0
+    },
+    {
+      "id": "rest_007",
+      "name": "Barbeque Nation",
+      "address": "Fun Republic Mall, Gomti Nagar",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226010",
+      "phoneNumber": "+91-522-4567897",
+      "email": "lucknow@barbequenation.com",
+      "description": "Live grill on your table with unlimited starters and buffet. Perfect for groups and celebrations with wide variety of cuisines.",
+      "images": [
+        "assets/image/dine2.png",
+        "assets/image/dining.png"
+      ],
+      "menu": [
+        {
+          "id": "item_036",
+          "name": "Grilled Prawns",
+          "description": "Marinated prawns grilled to perfection",
+          "price": 680.0,
+          "category": "starter",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_037",
+          "name": "Paneer Tikka",
+          "description": "Tandoori cottage cheese cubes",
+          "price": 380.0,
+          "category": "starter",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_038",
+          "name": "Fish Tikka",
+          "description": "Spiced grilled fish pieces",
+          "price": 520.0,
+          "category": "starter",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_039",
+          "name": "Kulfi Falooda",
+          "description": "Traditional Indian ice cream with vermicelli",
+          "price": 180.0,
+          "category": "dessert",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        }
+      ],
+      "facilities": [
+        "WiFi",
+        "Parking",
+        "Air Conditioning",
+        "Live Grill",
+        "Birthday Celebrations",
+        "Buffet"
+      ],
+      "rating": 4.2,
+      "totalReviews": 892,
+      "reviews": [
+        {
+          "userId": "user_111",
+          "userName": "Neha Verma",
+          "userProfilePic": "assets/image/dine2.png",
+          "rating": 4.0,
+          "comment": "Great value for money buffet. The live grill concept is amazing!",
+          "date": "2025-10-20T20:45:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "12:30 PM",
+      "closingTime": "11:30 PM",
+      "averageCostForTwo": 1600.0
+    },
+    {
+      "id": "rest_008",
+      "name": "The Yellow Chilli",
+      "address": "Vipul Khand, Gomti Nagar",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226010",
+      "phoneNumber": "+91-522-4567898",
+      "email": "info@theyellowchilli.com",
+      "description": "Contemporary Indian restaurant by celebrity chef Sanjeev Kapoor. Innovative takes on traditional recipes with modern presentation.",
+      "images": [
+        "assets/image/dining.png",
+        "assets/image/dine2.png"
+      ],
+      "menu": [
+        {
+          "id": "item_040",
+          "name": "Dahi Ke Kebab",
+          "description": "Crispy yogurt kebabs with mint chutney",
+          "price": 320.0,
+          "category": "starter",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_041",
+          "name": "Rara Gosht",
+          "description": "Minced and cubed lamb in spicy gravy",
+          "price": 580.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_042",
+          "name": "Subz Miloni",
+          "description": "Mixed vegetables in creamy tomato gravy",
+          "price": 340.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_043",
+          "name": "Phirni",
+          "description": "Ground rice pudding with saffron",
+          "price": 160.0,
+          "category": "dessert",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        }
+      ],
+      "facilities": [
+        "WiFi",
+        "Parking",
+        "Air Conditioning",
+        "Fine Dining",
+        "Private Events",
+        "Bar Available"
+      ],
+      "rating": 4.5,
+      "totalReviews": 378,
+      "reviews": [
+        {
+          "userId": "user_112",
+          "userName": "Rohan Mishra",
+          "userProfilePic": "assets/image/dining.png",
+          "rating": 4.5,
+          "comment": "Chef Sanjeev Kapoor's recipes shine here. The presentation is as good as the taste!",
+          "date": "2025-10-23T18:15:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "12:00 PM",
+      "closingTime": "11:00 PM",
+      "averageCostForTwo": 1350.0
+    },
+    {
+      "id": "rest_009",
+      "name": "Tunday Kababi",
+      "address": "Aminabad, Old Lucknow",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226018",
+      "phoneNumber": "+91-522-4567899",
+      "email": "contact@tundaykababi.com",
+      "description": "Legendary Lucknow eatery famous for its melt-in-mouth galouti kebabs. A century-old recipe that's a must-try for every food lover.",
+      "images": [
+        "assets/image/dine2.png",
+        "assets/image/dining.png"
+      ],
+      "menu": [
+        {
+          "id": "item_044",
+          "name": "Galouti Kebab",
+          "description": "World-famous melt-in-mouth mutton kebabs",
+          "price": 550.0,
+          "category": "starter",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_045",
+          "name": "Shami Kebab",
+          "description": "Minced meat patties with aromatic spices",
+          "price": 420.0,
+          "category": "starter",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_046",
+          "name": "Mutton Korma",
+          "description": "Rich and creamy mutton curry",
+          "price": 480.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_047",
+          "name": "Roomali Roti",
+          "description": "Paper-thin handkerchief bread",
+          "price": 60.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        }
+      ],
+      "facilities": [
+        "Takeaway",
+        "Traditional Seating",
+        "Cash Only",
+        "Street Food Style"
+      ],
+      "rating": 4.9,
+      "totalReviews": 1243,
+      "reviews": [
+        {
+          "userId": "user_113",
+          "userName": "Sanjay Tripathi",
+          "userProfilePic": "assets/image/dine2.png",
+          "rating": 5.0,
+          "comment": "No visit to Lucknow is complete without eating at Tunday Kababi. Absolutely heavenly!",
+          "date": "2025-10-24T14:30:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "11:00 AM",
+      "closingTime": "11:00 PM",
+      "averageCostForTwo": 600.0
+    },
+    {
+      "id": "rest_010",
+      "name": "Renaissance",
+      "address": "Park Road, Hazratganj",
+      "city": "Lucknow",
+      "state": "Uttar Pradesh",
+      "pincode": "226001",
+      "phoneNumber": "+91-522-4567900",
+      "email": "info@restaurantrenaissance.com",
+      "description": "Upscale multi-cuisine restaurant offering continental, Italian, and Asian dishes. Known for elegant ambiance and impeccable service.",
+      "images": [
+        "assets/image/dining.png",
+        "assets/image/dine2.png"
+      ],
+      "menu": [
+        {
+          "id": "item_048",
+          "name": "Prawn Tempura",
+          "description": "Crispy Japanese battered prawns",
+          "price": 680.0,
+          "category": "starter",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_049",
+          "name": "Mushroom Risotto",
+          "description": "Creamy Italian rice with wild mushrooms",
+          "price": 520.0,
+          "category": "mainCourse",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        },
+        {
+          "id": "item_050",
+          "name": "Grilled Salmon",
+          "description": "Norwegian salmon with lemon butter sauce",
+          "price": 880.0,
+          "category": "mainCourse",
+          "isVeg": false,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dining.png"
+        },
+        {
+          "id": "item_051",
+          "name": "Tiramisu",
+          "description": "Classic Italian coffee-flavored dessert",
+          "price": 320.0,
+          "category": "dessert",
+          "isVeg": true,
+          "isAvailable": true,
+          "imageUrl": "assets/image/dine2.png"
+        }
+      ],
+      "facilities": [
+        "WiFi",
+        "Parking",
+        "Air Conditioning",
+        "Fine Dining",
+        "Bar Available",
+        "Live Music",
+        "Outdoor Seating"
+      ],
+      "rating": 4.6,
+      "totalReviews": 524,
+      "reviews": [
+        {
+          "userId": "user_114",
+          "userName": "Kavita Agarwal",
+          "userProfilePic": "assets/image/dining.png",
+          "rating": 5.0,
+          "comment": "Perfect place for special occasions. The salmon was cooked to perfection!",
+          "date": "2025-10-23T21:00:00Z"
+        }
+      ],
+      "isOpen": true,
+      "openingTime": "12:00 PM",
+      "closingTime": "12:00 AM",
+      "averageCostForTwo": 2000.0
+    }
+  ]
+}

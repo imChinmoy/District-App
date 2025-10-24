@@ -40,6 +40,7 @@ dependencies:
   location: ^8.0.1
   geocoding: ^3.0.0
   animated_text_kit: ^4.3.0
+  cached_network_image: ^3.3.1
 
 dev_dependencies:
 
@@ -63,6 +64,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/splash_screen.png
+    - assets/image/dining.png
+    - assets/image/dine2.png
+    - assets/dining/mood.json
+    - assets/dining/restaurants.json
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

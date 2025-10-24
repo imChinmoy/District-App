@@ -1,10 +1,52 @@
+import 'dart:convert';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:district/colors.dart';
-import 'package:district/features/home/location.dart';
+import 'package:district/features/home/dining/dining.dart';
+import 'package:district/features/home/location/locationService.dart';
+import 'package:district/features/home/location/location.dart';
 import 'package:district/features/home/searchpage.dart';
 import 'package:district/features/home/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final selectedTabIndexProvider = StateProvider<int>((ref) => 0);
+
+// Riverpod provider for loading mood categories
+final moodCategoriesProvider = FutureProvider<List<MoodCategory>>((ref) async {
+  try {
+    final String response = await rootBundle.loadString('assets/dining/mood.json');
+    final data = json.decode(response);
+    final categories = (data['categories'] as List)
+        .map((category) => MoodCategory.fromJson(category))
+        .toList();
+    return categories;
+  } catch (e) {
+    print('Error loading mood categories: $e');
+    return [];
+  }
+});
+
+// Model class for mood categories
+class MoodCategory {
+  final String id;
+  final String title;
+  final String imagePath;
+
+  MoodCategory({
+    required this.id,
+    required this.title,
+    required this.imagePath,
+  });
+
+  factory MoodCategory.fromJson(Map<String, dynamic> json) {
+    return MoodCategory(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      imagePath: json['imagePath'] as String,
+    );
+  }
+}
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,8 +56,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _selectedIndex = 0;
-
   final List<Map<String, dynamic>> _tabs = [
     {
       'icon': Icons.stars,
@@ -42,6 +82,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final location = ref.watch(currentLocationProvider);
+    final selectedIndex = ref.watch(selectedTabIndexProvider);
     
     return Scaffold(
       backgroundColor: Colors.black,
@@ -49,16 +90,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         preferredSize: const Size.fromHeight(69),
         child: _buildCustomAppBar(context, ref, location),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              _buildSearchBar(context),
-              _buildCategoryTabs(),
-              // Additional content 
-            ],
+      body: Column(
+        children: [
+          _buildSearchBar(context),
+          _buildCategoryTabs(selectedIndex),
+          const SizedBox(height: 8),
+          Expanded(
+            child: IndexedStack(
+              index: selectedIndex,
+              children: [
+                ForYouScreen(),
+                DiningScreen(),
+                EventsScreen(),
+                MoviesScreen(),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -220,7 +268,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCategoryTabs() {
+  Widget _buildCategoryTabs(int selectedIndex) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -229,15 +277,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _tabs.length,
           (index) => GestureDetector(
             onTap: () {
-              setState(() {
-                _selectedIndex = index;
-              });
+              ref.read(selectedTabIndexProvider.notifier).state = index;
             },
             child: _buildTabItem(
               icon: _tabs[index]['icon'],
               label: _tabs[index]['label'],
               color: _tabs[index]['color'],
-              isSelected: _selectedIndex == index,
+              isSelected: selectedIndex == index,
             ),
           ),
         ),
@@ -279,6 +325,68 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class ForYouScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        color: Colors.black,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'For You Content',
+              style: TextStyle(color: Colors.white, fontSize: 24),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+class EventsScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        color: Colors.black,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Events Content',
+              style: TextStyle(color: Colors.white, fontSize: 24),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MoviesScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        color: Colors.black,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Movies Content',
+              style: TextStyle(color: Colors.white, fontSize: 24),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

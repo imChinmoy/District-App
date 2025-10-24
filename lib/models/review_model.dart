@@ -22,7 +22,7 @@ class ReviewModel {
       userProfilePic: map['userProfilePic'],
       rating: map['rating'],
       comment: map['comment'],
-      date: map['date'].toDate(),
+      date: DateTime.parse(map['date']),
     );
   }
   Map<String, dynamic> toMap(){
@@ -32,7 +32,7 @@ class ReviewModel {
       'userProfilePic': userProfilePic,
       'rating': rating,
       'comment': comment,
-      'date': date,
+      'date':  date.toIso8601String(),
     };
   }
 
