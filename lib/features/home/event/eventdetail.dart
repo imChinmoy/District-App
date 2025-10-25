@@ -294,9 +294,7 @@ class EventDetailPage extends StatelessWidget {
         return 'STAND-UP';
       case EventCategory.festival:
         return 'FESTIVAL';
-      default:
-        return 'EVENT';
-    }
+      }
   }
 
   Color _getCategoryColor() {
@@ -309,8 +307,6 @@ class EventDetailPage extends StatelessWidget {
         return Colors.orange[700]!;
       case EventCategory.festival:
         return Colors.pink[700]!;
-      default:
-        return Colors.grey[700]!;
-    }
+      }
   }
 }

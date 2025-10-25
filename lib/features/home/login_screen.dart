@@ -75,7 +75,7 @@ class LoginScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = ref.watch(isLoadingProvider);
-    final iconController = ref.watch(iconControllerProvider);
+    ref.watch(iconControllerProvider);
     final textController = ref.watch(textControllerProvider);
 
     return Scaffold(
