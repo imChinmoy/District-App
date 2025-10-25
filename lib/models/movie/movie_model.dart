@@ -54,27 +54,27 @@ class MovieModel {
   }
 
   factory MovieModel.fromMap(Map<String, dynamic> map) {
-    return MovieModel(
-      id: map['id'] ?? '',
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
-      genre: map['genre'] ?? '',
-      language: map['language'] ?? '',
-      duration: map['duration'] ?? '',
-      rating: map['rating'] ?? '',
-      cast: List<String>.from(map['cast'] ?? []),
-      crew: List<String>.from(map['crew'] ?? []),
-      posterUrls: List<String>.from(map['posterUrls'] ?? []),
-      averageRating: (map['averageRating'] ?? 0).toDouble(),
-      totalReviews: map['totalReviews'] ?? 0,
-      showtimes: (map['showtimes'] as List<dynamic>?)
-              ?.map((s) => ShowtimeModel.fromMap(s))
-              .toList() ??
-          [],
-      reviews: (map['reviews'] as List<dynamic>?)
-              ?.map((r) => ReviewModel.fromMap(r))
-              .toList() ??
-          [],
-    );
-  }
+  return MovieModel(
+    id: (map['id'] ?? '').toString(),
+    title: (map['title'] ?? 'Unknown').toString(),
+    description: (map['description'] ?? '').toString(),
+    genre: (map['genre'] ?? '').toString(),
+    language: (map['language'] ?? 'Unknown').toString(),
+    duration: (map['duration'] ?? '').toString(),
+    rating: (map['rating'] ?? 'N/A').toString(),
+    cast: (map['cast'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+    crew: (map['crew'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+    posterUrls: (map['posterUrls'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+    averageRating: ((map['averageRating'] ?? 0) as num).toDouble(),
+    totalReviews: (map['totalReviews'] ?? 0) as int,
+    showtimes: (map['showtimes'] as List<dynamic>?)
+            ?.map((s) => ShowtimeModel.fromMap(s as Map<String, dynamic>))
+            .toList() ??
+        [],
+    reviews: (map['reviews'] as List<dynamic>?)
+            ?.map((r) => ReviewModel.fromMap(r as Map<String, dynamic>))
+            .toList() ??
+        [],
+  );
+}
 }
