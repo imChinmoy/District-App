@@ -1,3 +1,4 @@
+import 'package:district/models/mood_model.dart';
 import 'package:district/providers/program_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:district/database/repository/event_repo.dart';
@@ -35,6 +36,25 @@ class DiningController extends StateNotifier<List<DiningModel>> {
   Future<void> fetchAllDining() async {
     final dining = await _repo.getAllDining();
     state = dining;
+  }
+}
+
+final diningTypeProvider =
+    StateNotifierProvider<DiningTypeController, List<MoodCategory>>((ref) {
+      return DiningTypeController(ref.read(diningRepositoryProvider));
+    });
+
+class DiningTypeController extends StateNotifier<List<MoodCategory>> {
+  final DiningRepository _repo;
+  DiningTypeController(this._repo) : super([]);
+
+  Future<void> diningType() async {
+    try {
+      final moodCategories = await _repo.diningType();
+      state = moodCategories;
+    } catch (e) {
+      state = [];
+    }
   }
 }
 

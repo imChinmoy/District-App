@@ -1,5 +1,6 @@
 import 'package:district/models/Review_model.dart';
 import 'package:district/models/dining/menu_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DiningModel {
   final String id;
@@ -13,11 +14,11 @@ class DiningModel {
   final String description;
   final List<String> images; 
   final List<MenuModel> menu; 
-  final List<String> facilities; // e.g. ["WiFi", "Parking", "Outdoor Seating"]
+  final List<String> facilities; 
   final double rating;
   final int totalReviews;
   final List<ReviewModel> reviews;
-  bool isOpen=false;
+  final bool isOpen; // CHANGED: Added final keyword
   final String openingTime;
   final String closingTime;
   final double averageCostForTwo;
@@ -44,28 +45,39 @@ class DiningModel {
     required this.averageCostForTwo,
   });
 
-  factory DiningModel .fromMap(Map<String, dynamic> map) {
+  factory DiningModel.fromMap(Map<String, dynamic> map) {
+    List<T> _safeMapList<T>(dynamic list, T Function(Map<String, dynamic>) fromMap) {
+      if (list == null) return <T>[];
+      return (list as List<dynamic>).map((item) => fromMap(item as Map<String, dynamic>)).toList();
+    }
+    
+    List<String> _safeCastStringList(dynamic list) { 
+      if (list == null) return <String>[];
+      return (list as List<dynamic>).map((e) => e.toString()).toList();
+    }
+    
     return DiningModel(
-      id: map['id'],
-      name: map['name'],
-      address: map['address'],
-      city: map['city'],
-      state: map['state'],
-      pincode: map['pincode'],
-      phoneNumber: map['phoneNumber'],
-      email: map['email'],
-      description: map['description'],
-      images: List<String>.from(map['images']),
-      menu: List<MenuModel>.from(map['menu'].map((item) => MenuModel.fromMap(item))),
-      facilities: List<String>.from(map['facilities']),
-      rating: map['rating'].toDouble(),
-      totalReviews: map['totalReviews'],
-      reviews: List<ReviewModel>.from(map['reviews'].map((review) => ReviewModel.fromMap(review))),
-      isOpen: map['isOpen'],
-      openingTime: map['openingTime'],
-      closingTime: map['closingTime'],
-      averageCostForTwo: map['averageCostForTwo'].toDouble(),    
-    );    
+      
+      id: map['id'] as String? ?? 'UNKNOWN_ID',
+      name: map['name'] as String? ?? 'Unnamed Restaurant',
+      address: map['address'] as String? ?? 'N/A',
+      city: map['city'] as String? ?? 'N/A',
+      state: map['state'] as String? ?? 'N/A',
+      pincode: map['pincode'] as String? ?? 'N/A',
+      phoneNumber: map['phoneNumber'] as String? ?? 'N/A',
+      email: map['email'] as String? ?? 'N/A',
+      description: map['description'] as String? ?? 'No description available.',
+      images: _safeCastStringList(map['images']), 
+      menu: _safeMapList<MenuModel>(map['menu'], MenuModel.fromMap),
+      facilities: _safeCastStringList(map['facilities']),
+      rating: (map['rating'] as num? ?? 0.0).toDouble(),
+      totalReviews: map['totalReviews'] as int? ?? 0,
+      reviews: _safeMapList<ReviewModel>(map['reviews'], ReviewModel.fromMap),
+      isOpen: map['isOpen'] as bool? ?? false,
+      openingTime: map['openingTime'] as String? ?? 'Closed',
+      closingTime: map['closingTime'] as String? ?? 'Closed',
+      averageCostForTwo: (map['averageCostForTwo'] as num? ?? 0.0).toDouble(),
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -87,9 +99,9 @@ class DiningModel {
       'reviews': reviews.map((review) => review.toMap()).toList(),
       'isOpen': isOpen,
       'openingTime': openingTime,
-      'closingTime': closingTime,     
+      'closingTime': closingTime,  
       'averageCostForTwo': averageCostForTwo,
-    };    
+    }; 
   }
 
 }

@@ -1,4 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:district/features/home/dining/dining.dart';
+import 'package:district/features/home/event/event.dart';
+import 'package:district/features/home/for_you/for_you.dart';
 import 'package:district/features/home/location/location.dart';
 import 'package:district/utils/colors.dart';
 import '../home/location/locationService.dart';
@@ -18,53 +21,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedIndex = 0;
 
   final List<Map<String, dynamic>> _tabs = [
-    {
-      'icon': Icons.stars,
-      'label': 'FOR YOU',
-      'color': AppColors.foryou,
-    },
-    {
-      'icon': Icons.restaurant,
-      'label': 'DINING',
-      'color': AppColors.dining,
-    },
+    {'icon': Icons.stars, 'label': 'FOR YOU', 'color': AppColors.foryou},
+    {'icon': Icons.restaurant, 'label': 'DINING', 'color': AppColors.dining},
     {
       'icon': Icons.confirmation_number,
       'label': 'EVENTS',
       'color': AppColors.events,
     },
-    {
-      'icon': Icons.movie,
-      'label': 'MOVIES',
-      'color': AppColors.movies,
-    },
+    {'icon': Icons.movie, 'label': 'MOVIES', 'color': AppColors.movies},
+  ];
+
+  final List<Widget> _categoryScreens = [
+
+    const ForYouScreen(),
+    const DiningScreen(),
+    const EventsScreen(),
+    const Center(
+      child: Text(
+        'Movies Content',
+        style: TextStyle(color: Colors.white, fontSize: 18),
+      ),
+    )
   ];
 
   @override
   Widget build(BuildContext context) {
     final location = ref.watch(currentLocationProvider);
-    
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(69),
         child: _buildCustomAppBar(context, ref, location),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              _buildSearchBar(context),
-              _buildCategoryTabs(),
-              // Additional content 
-            ],
+      body: Column(
+        children: [
+          _buildSearchBar(context),
+          _buildCategoryTabs(),
+          Expanded(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _categoryScreens,
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
-  
-  Widget _buildCustomAppBar(BuildContext context, WidgetRef ref, LocationData location) {
+
+  Widget _buildCustomAppBar(
+    BuildContext context,
+    WidgetRef ref,
+    LocationData location,
+  ) {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
@@ -74,17 +83,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onTap: () {
                 ref.read(currentLocationProvider.notifier).refreshLocation();
               },
-              child: Container(
-                child: Icon(
-                  Icons.location_on_outlined,
-                  color: Colors.white70,
-                  size: 24,
-                ),
+              child: const Icon(
+                Icons.location_on_outlined,
+                color: Colors.white70,
+                size: 24,
               ),
             ),
-            
+
             const SizedBox(width: 12),
-            
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,9 +132,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(width: 12),
-            
+
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -136,17 +143,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 );
               },
               child: Container(
-                width: 45,
-                height: 45,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.white70,
-                  borderRadius: BorderRadius.circular(25),
+                  color: AppColors.dining.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Icon(
-                  Icons.person_outline,
-                  color: Colors.black87,
-                  size: 28,
-                ),
+                child: const Icon(Icons.person, color: Colors.black, size: 24),
               ),
             ),
           ],
@@ -157,56 +160,53 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: ElevatedButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const Searchpage(),
-            ),
+            MaterialPageRoute(builder: (context) => const Searchpage()),
           );
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2A2A3E),
           foregroundColor: Colors.white,
-          elevation: 2,
+          elevation: 5,
+          shadowColor: Colors.black,
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: Colors.white10, width: 0.5),
           ),
-          minimumSize: const Size(double.infinity, 50),
+          minimumSize: const Size(double.infinity, 48),
         ),
         child: Row(
           children: [
             const SizedBox(width: 16),
-            Icon(
-              Icons.search,
-              color: Colors.white70,
-              size: 24,
-            ),
+            const Icon(Icons.search, color: Colors.white70, size: 24),
             const SizedBox(width: 12),
+
             AnimatedTextKit(
               animatedTexts: [
                 RotateAnimatedText(
-                  "Search for 'Sonu Nigam'",
-                  textStyle: TextStyle(
+                  "Search for 'The Great Indian Kitchen'",
+                  textStyle: const TextStyle(
                     color: Colors.white70,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 RotateAnimatedText(
-                  "Search for 'Arijit Singh'",
-                  textStyle: TextStyle(
+                  "Search for 'Live Concerts'",
+                  textStyle: const TextStyle(
                     color: Colors.white70,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 RotateAnimatedText(
-                  "Search for 'Shreya Ghoshal'",
-                  textStyle: TextStyle(
+                  "Search for 'Inception'",
+                  textStyle: const TextStyle(
                     color: Colors.white70,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -214,7 +214,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ],
               repeatForever: true,
-            )
+            ),
           ],
         ),
       ),
@@ -255,11 +255,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          color: isSelected ? color : Colors.grey,
-          size: 28,
-        ),
+        Icon(icon, color: isSelected ? color : Colors.grey, size: 28),
         const SizedBox(height: 4),
         Text(
           label,
@@ -271,7 +267,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         const SizedBox(height: 4),
         AnimatedContainer(
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 200),
           height: 3,
           width: isSelected ? 40 : 0,
           decoration: BoxDecoration(

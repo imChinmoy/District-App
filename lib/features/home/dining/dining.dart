@@ -1,71 +1,58 @@
-import 'dart:convert';
 import 'package:district/utils/colors.dart';
 import 'package:district/features/home/dining/rest.dart';
 import 'package:district/models/dining/dining_model.dart';
+import 'package:district/models/mood_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:district/features/controllers/program_controller.dart';
 
-class MoodCategory {
-  final String id;
-  final String title;
-  final String imagePath;
-
-  MoodCategory({
-    required this.id,
-    required this.title,
-    required this.imagePath,
-  });
-
-  factory MoodCategory.fromJson(Map<String, dynamic> json) => MoodCategory(
-        id: json['id'] as String,
-        title: json['title'] as String,
-        imagePath: json['imagePath'] as String,
-      );
-}
-
-final moodCategoriesProvider = FutureProvider<List<MoodCategory>>((ref) async {
-  final response = await rootBundle.loadString('assets/dining/mood.json');
-  final data = json.decode(response);
-  return (data['categories'] as List)
-      .map((category) => MoodCategory.fromJson(category))
-      .toList();
-});
-
-final restaurantsProvider = FutureProvider<List<DiningModel>>((ref) async {
-  final response =
-      await rootBundle.loadString('assets/restaurant/restaurants.json');
-  final data = json.decode(response);
-  return (data['restaurants'] as List)
-      .map((r) => DiningModel.fromMap(r))
-      .toList();
-});
-
-class DiningScreen extends ConsumerWidget {
-  const DiningScreen({Key? key}) : super(key: key);
+class DiningScreen extends ConsumerStatefulWidget {
+  const DiningScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final moodCategoriesAsync = ref.watch(moodCategoriesProvider);
-    final restaurantsAsync = ref.watch(restaurantsProvider);
+  ConsumerState<DiningScreen> createState() => _DiningScreenState();
+}
 
-    return Container(
-      color: Colors.black,
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            _buildSectionHeading('IN THE MOOD FOR'),
-            const SizedBox(height: 24),
-            _buildMoodSection(moodCategoriesAsync),
-            const SizedBox(height: 40),
-            _buildSectionHeading('ALL RESTAURANTS'),
-            const SizedBox(height: 24),
-            _buildRestaurantsSection(context, restaurantsAsync),
-            const SizedBox(height: 40),
-          ],
+class _DiningScreenState extends ConsumerState<DiningScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(diningProvider.notifier).fetchAllDining();
+      ref.read(diningTypeProvider.notifier).diningType();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final diningList = ref.watch(diningProvider);
+    final moodCategories = ref.watch(diningTypeProvider);
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(diningProvider.notifier).fetchAllDining();
+          await ref.read(diningTypeProvider.notifier).diningType();
+        },
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              _buildSectionHeading('IN THE MOOD FOR'),
+              const SizedBox(height: 24),
+              _buildMoodSection(moodCategories),
+
+              const SizedBox(height: 40),
+              _buildSectionHeading('ALL RESTAURANTS'),
+              const SizedBox(height: 24),
+              _buildRestaurantsSection(context, diningList),
+
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
@@ -109,30 +96,28 @@ class DiningScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMoodSection(AsyncValue<List<MoodCategory>> asyncData) {
-    return asyncData.when(
-      data: (categories) => categories.isEmpty
-          ? _buildMessage('No categories available')
-          : _buildMoodCards(categories),
-      loading: () => _buildMessage('Loading...', isLoading: true),
-      error: (e, _) => _buildMessage('Error: $e', isError: true),
-    );
+  Widget _buildMoodSection(List<MoodCategory> categories) {
+    if (categories.isEmpty) {
+      return _buildMessage('Loading mood categories...', isLoading: true);
+    }
+    return _buildMoodCards(categories);
   }
 
   Widget _buildRestaurantsSection(
-      BuildContext context, AsyncValue<List<DiningModel>> asyncData) {
-    return asyncData.when(
-      data: (restaurants) => restaurants.isEmpty
-          ? _buildMessage('No restaurants available')
-          : _buildRestaurantsList(context, restaurants),
-      loading: () => _buildMessage('Loading restaurants...', isLoading: true),
-      error: (e, _) =>
-          _buildMessage('Error loading restaurants: $e', isError: true),
-    );
+    BuildContext context,
+    List<DiningModel> restaurants,
+  ) {
+    if (restaurants.isEmpty) {
+      return _buildMessage('Loading restaurants...', isLoading: true);
+    }
+    return _buildRestaurantsList(context, restaurants);
   }
 
-  Widget _buildMessage(String message,
-      {bool isLoading = false, bool isError = false}) {
+  Widget _buildMessage(
+    String message, {
+    bool isLoading = false,
+    bool isError = false,
+  }) {
     return SizedBox(
       height: 200,
       child: Center(
@@ -165,7 +150,9 @@ class DiningScreen extends ConsumerWidget {
   }
 
   Widget _buildRestaurantsList(
-      BuildContext context, List<DiningModel> restaurants) {
+    BuildContext context,
+    List<DiningModel> restaurants,
+  ) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -177,9 +164,8 @@ class DiningScreen extends ConsumerWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => RestaurantDetailPage(
-                restaurant: restaurants[index],
-              ),
+              builder: (context) =>
+                  RestaurantDetailPage(restaurant: restaurants[index]),
             ),
           );
         },
@@ -201,8 +187,11 @@ class DiningScreen extends ConsumerWidget {
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 color: Colors.grey[800],
-                child: const Icon(Icons.restaurant,
-                    color: Colors.white54, size: 48),
+                child: const Icon(
+                  Icons.restaurant,
+                  color: Colors.white54,
+                  size: 48,
+                ),
               ),
             ),
             Container(
@@ -210,10 +199,7 @@ class DiningScreen extends ConsumerWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black87,
-                  ],
+                  colors: [Colors.transparent, Colors.black87],
                 ),
               ),
             ),
@@ -260,6 +246,13 @@ class RestaurantCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.grey[900],
           borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,21 +260,45 @@ class RestaurantCard extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: Image.asset(
-                    restaurant.images.isNotEmpty
-                        ? restaurant.images[0]
-                        : 'assets/restaurant/dining.png',
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      height: 200,
-                      color: Colors.grey[800],
-                      child: const Icon(Icons.restaurant,
-                          color: Colors.white54, size: 60),
-                    ),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
+                  child: Stack(
+                    children: [
+                      Image.asset(
+                        restaurant.images.isNotEmpty
+                            ? restaurant.images[0]
+                            : 'assets/restaurant/dining.png',
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 200,
+                          color: Colors.grey[800],
+                          child: const Icon(
+                            Icons.restaurant,
+                            color: Colors.white54,
+                            size: 60,
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.15),
+                                Colors.black.withOpacity(0.4),
+                              ],
+                              stops: const [0.0, 0.7, 1.0],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 if (restaurant.averageCostForTwo < 1000)
@@ -290,21 +307,26 @@ class RestaurantCard extends StatelessWidget {
                     left: 12,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.purple[700],
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
                         children: const [
-                          Icon(Icons.local_offer,
-                              color: Colors.white, size: 14),
-                          SizedBox(width: 4),
+                          Icon(
+                            Icons.local_offer,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                          SizedBox(width: 6),
                           Text(
-                            'Flat 20% OFF',
+                            '20% OFF',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 13,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -332,19 +354,25 @@ class RestaurantCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Icon(Icons.bookmark_border,
-                          color: Colors.white, size: 24),
+                      const Icon(
+                        Icons.bookmark_border,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
+                      // ENHANCEMENT 4: Softer rating button
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
+                          horizontal: 8,
+                          vertical: 4, 
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.green[700],
-                          borderRadius: BorderRadius.circular(6),
+                          color: const Color(0xFF388E3C), 
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Row(
                           children: [
@@ -356,16 +384,19 @@ class RestaurantCard extends StatelessWidget {
                                 fontSize: 13,
                               ),
                             ),
-                            const SizedBox(width: 2),
-                            const Icon(Icons.star,
-                                color: Colors.white, size: 12),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.star,
+                              color: Colors.white,
+                              size: 12,
+                            ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'North Indian • ₹${restaurant.averageCostForTwo.toInt()} for two',
+                          '₹${restaurant.averageCostForTwo.toInt()} for two',
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 14,
@@ -376,14 +407,23 @@ class RestaurantCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    '${_calculateDistance()} km • ${restaurant.address}, ${restaurant.city}',
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 13,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.grey[600],
+                        size: 14,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          '${_calculateDistance()} km • ${restaurant.address}, ${restaurant.city}',
+                          style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

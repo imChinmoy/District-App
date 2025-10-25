@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ReviewModel {
   final String userId;
   final String userName;
@@ -16,24 +18,26 @@ class ReviewModel {
   });
 
   factory ReviewModel.fromMap(Map<String, dynamic> map) {
-  return ReviewModel(
-    userName: (map['userName'] ?? 'Anonymous').toString(),
-    userProfilePic: (map['userProfilePic'] ?? '').toString(),
-    rating: ((map['rating'] ?? 0) as num).toDouble(),  
-    comment: (map['comment'] ?? '').toString(),
-    date: DateTime.parse(map['date'] ?? DateTime.now().toIso8601String()), userId: '',
-  );
-}
+    return ReviewModel(
+      userId: map['userId'] as String? ?? 'guest_id',
+      userName: map['userName'] as String? ?? 'Guest User',
+      userProfilePic: map['userProfilePic'] as String? ?? '',
+      rating: (map['rating'] as num? ?? 0.0).toDouble(),
+      comment: map['comment'] as String? ?? 'No comment.',
+      date:
+          (map['date'] as Timestamp?)?.toDate() ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
       'userId': userId,
       'userName': userName,
       'userProfilePic': userProfilePic,
       'rating': rating,
       'comment': comment,
-      'date':  date.toIso8601String(),
+      'date': Timestamp.fromDate(date),
     };
   }
-
 }
