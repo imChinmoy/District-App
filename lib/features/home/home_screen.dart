@@ -1,6 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:district/features/home/location/location.dart';
 import 'package:district/utils/colors.dart';
-import 'package:district/features/home/location.dart';
+import '../home/location/locationService.dart';
 import 'package:district/features/home/searchpage.dart';
 import 'package:district/features/home/profile.dart';
 import 'package:flutter/material.dart';
