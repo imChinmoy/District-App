@@ -93,7 +93,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Number of Guests',
+          'Number of Seats',
           style: TextStyle(
             color: Colors.white,
             fontSize: 16,

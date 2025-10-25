@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:district/colors.dart';
 import 'package:district/features/home/dining/dining.dart';
+import 'package:district/features/home/event/event.dart';
 import 'package:district/features/home/location/locationService.dart';
 import 'package:district/features/home/location/location.dart';
 import 'package:district/features/home/searchpage.dart';
@@ -351,25 +352,7 @@ class ForYouScreen extends StatelessWidget {
 
 
 
-class EventsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        color: Colors.black,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Events Content',
-              style: TextStyle(color: Colors.white, fontSize: 24),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+
 
 class MoviesScreen extends StatelessWidget {
   @override

@@ -34,7 +34,7 @@ final moodCategoriesProvider = FutureProvider<List<MoodCategory>>((ref) async {
 
 final restaurantsProvider = FutureProvider<List<DiningModel>>((ref) async {
   final response =
-      await rootBundle.loadString('assets/dining/restaurants.json');
+      await rootBundle.loadString('assets/restaurant/restaurants.json');
   final data = json.decode(response);
   return (data['restaurants'] as List)
       .map((r) => DiningModel.fromMap(r))
@@ -57,12 +57,10 @@ class DiningScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-
             _buildSectionHeading('IN THE MOOD FOR'),
             const SizedBox(height: 24),
             _buildMoodSection(moodCategoriesAsync),
             const SizedBox(height: 40),
-
             _buildSectionHeading('ALL RESTAURANTS'),
             const SizedBox(height: 24),
             _buildRestaurantsSection(context, restaurantsAsync),
@@ -175,7 +173,6 @@ class DiningScreen extends ConsumerWidget {
       itemCount: restaurants.length,
       itemBuilder: (context, index) => RestaurantCard(
         restaurant: restaurants[index],
-        imageIndex: index % 2, 
         onTap: () {
           Navigator.push(
             context,
@@ -247,23 +244,15 @@ class DiningScreen extends ConsumerWidget {
 class RestaurantCard extends StatelessWidget {
   final DiningModel restaurant;
   final VoidCallback onTap;
-  final int imageIndex;
 
   const RestaurantCard({
     Key? key,
     required this.restaurant,
     required this.onTap,
-    this.imageIndex = 0,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
-    final List<String> fixedImages = [
-      'assets/image/dining.png',
-      'assets/image/dine2.png',
-    ];
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -281,7 +270,9 @@ class RestaurantCard extends StatelessWidget {
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(12)),
                   child: Image.asset(
-                    fixedImages[imageIndex],
+                    restaurant.images.isNotEmpty
+                        ? restaurant.images[0]
+                        : 'assets/restaurant/dining.png',
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -293,7 +284,6 @@ class RestaurantCard extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 if (restaurant.averageCostForTwo < 1000)
                   Positioned(
                     top: 12,
@@ -324,13 +314,11 @@ class RestaurantCard extends StatelessWidget {
                   ),
               ],
             ),
-
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -349,7 +337,6 @@ class RestaurantCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-
                   Row(
                     children: [
                       Container(
@@ -389,7 +376,6 @@ class RestaurantCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-
                   Text(
                     '${_calculateDistance()} km • ${restaurant.address}, ${restaurant.city}',
                     style: TextStyle(

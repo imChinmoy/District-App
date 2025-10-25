@@ -29,7 +29,7 @@ class _SplashscreenState extends ConsumerState<Splashscreen> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/splash_screen.png'),
+            image: AssetImage('lib/features/splash_screen.png'),
             fit: BoxFit.cover,
           ),
         ),
