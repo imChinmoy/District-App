@@ -60,8 +60,6 @@ flutter:
   uses-material-design: true
   assets:
     - lib/features/splash_screen.png
-    - assets/restaurant/
-    - assets/dining/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

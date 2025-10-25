@@ -1,7 +1,7 @@
 import 'package:district/models/dining/dining_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'booking_page.dart';
+import '../booking_page.dart';
 
 class RestaurantDetailPage extends ConsumerWidget {
   final DiningModel restaurant;
@@ -49,10 +49,15 @@ class RestaurantDetailPage extends ConsumerWidget {
       child: SafeArea(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.push(
+           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => BookingPage(restaurant: restaurant),
+                builder: (context) => BookingPage(
+                itemId: restaurant.id,
+                itemName: restaurant.name,
+                bookingType: BookingType.dining,
+                additionalInfo: restaurant.address,
+                ),
               ),
             );
           },
