@@ -8,7 +8,7 @@ import '../providers/auth_provider.dart';
 import '../features/home/home_screen.dart';
 import '../features/home/profile.dart';
 import '../features/home/login_screen.dart';
-import '../splashscreen.dart';
+import '../features/splashscreen.dart'; 
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 

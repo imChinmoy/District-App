@@ -1,0 +1,454 @@
+import 'package:district/models/dining/dining_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'booking_page.dart';
+
+class RestaurantDetailPage extends ConsumerWidget {
+  final DiningModel restaurant;
+
+  const RestaurantDetailPage({Key? key, required this.restaurant})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: CustomScrollView(
+        slivers: [
+          _buildSliverAppBar(context),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 20),
+                  _buildContactInfo(),
+                  const SizedBox(height: 25),
+                  _buildFacilities(),
+                  const SizedBox(height: 25),
+                  _buildMenu(),
+                  const SizedBox(height: 25),
+                  _buildReviews(),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: _buildBookButton(context),
+    );
+  }
+
+  Widget _buildBookButton(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: Colors.grey[900],
+      child: SafeArea(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BookingPage(restaurant: restaurant),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+          child: const Text(
+            'Book Now',
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSliverAppBar(BuildContext context) {
+    return SliverAppBar(
+      expandedHeight: 300,
+      pinned: true,
+      backgroundColor: Colors.black,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.share, color: Colors.white),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Icon(Icons.favorite_border, color: Colors.white),
+          onPressed: () {},
+        ),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              restaurant.images[0],
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: Colors.grey[800],
+                child: const Icon(Icons.restaurant,
+                    color: Colors.white54, size: 80),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.7),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                restaurant.name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: restaurant.isOpen ? Colors.green : Colors.red,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                restaurant.isOpen ? 'OPEN' : 'CLOSED',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Row(
+          children: [
+            const Icon(Icons.star, color: Colors.amber, size: 24),
+            const SizedBox(width: 5),
+            Text(
+              '${restaurant.rating}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '(${restaurant.totalReviews} reviews)',
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Text(
+          restaurant.description,
+          style: TextStyle(
+            color: Colors.grey[300],
+            fontSize: 14,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContactInfo() {
+    return Column(
+      children: [
+        _buildInfoRow(Icons.location_on, restaurant.address),
+        const SizedBox(height: 10),
+        _buildInfoRow(Icons.phone, restaurant.phoneNumber),
+        const SizedBox(height: 10),
+        _buildInfoRow(Icons.email, restaurant.email),
+        const SizedBox(height: 10),
+        _buildInfoRow(Icons.access_time,
+            '${restaurant.openingTime} - ${restaurant.closingTime}'),
+        const SizedBox(height: 10),
+        _buildInfoRow(Icons.attach_money,
+            '₹${restaurant.averageCostForTwo.toInt()} for two'),
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.grey, size: 20),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.grey[300],
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFacilities() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Facilities',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 15),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: restaurant.facilities.map((facility) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey[700]!),
+              ),
+              child: Text(
+                facility,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMenu() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Menu',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 15),
+        ...restaurant.menu.map((item) => _buildMenuItem(item)).toList(),
+      ],
+    );
+  }
+
+  Widget _buildMenuItem(item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              item.imageUrl,
+              width: 80,
+              height: 80,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 80,
+                height: 80,
+                color: Colors.grey[800],
+                child: const Icon(Icons.fastfood,
+                    color: Colors.white54, size: 32),
+              ),
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: item.isVeg ? Colors.green : Colors.red,
+                          width: 2,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.circle,
+                        size: 8,
+                        color: item.isVeg ? Colors.green : Colors.red,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        item.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  item.description,
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 12,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '₹${item.price.toInt()}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviews() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Reviews',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 15),
+        ...restaurant.reviews
+            .map((review) => _buildReviewCard(review))
+            .toList(),
+      ],
+    );
+  }
+
+  Widget _buildReviewCard(review) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: AssetImage(review.userProfilePic),
+                onBackgroundImageError: (_, __) {},
+                child: review.userProfilePic.isEmpty
+                    ? const Icon(Icons.person, color: Colors.white)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      review.userName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: List.generate(5, (index) {
+                        return Icon(
+                          index < review.rating
+                              ? Icons.star
+                              : Icons.star_border,
+                          color: Colors.amber,
+                          size: 14,
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            review.comment,
+            style: TextStyle(
+              color: Colors.grey[300],
+              fontSize: 13,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

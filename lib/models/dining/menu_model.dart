@@ -5,6 +5,7 @@ class MenuModel {
   final String id;
   final String name;
   final double price;
+  final String description;
   final FoodCategory category;
   final bool isVeg;
   final bool isAvailable;
@@ -14,6 +15,7 @@ class MenuModel {
     required this.id,
     required this.name,
     required this.price,
+    required this.description,
     required this.category,
     required this.isVeg,
     required this.isAvailable,
@@ -40,6 +42,6 @@ class MenuModel {
         ),
         isVeg: map['isVeg'] ?? false,
         isAvailable: map['isAvailable'] ?? true,
-        imageUrl: map['imageUrl'] ?? '',
+        imageUrl: map['imageUrl'] ?? '', description: '',
       );
 }
