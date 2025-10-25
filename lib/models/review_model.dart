@@ -16,15 +16,15 @@ class ReviewModel {
   });
 
   factory ReviewModel.fromMap(Map<String, dynamic> map) {
-    return ReviewModel(
-      userId: map['userId'],
-      userName: map['userName'],
-      userProfilePic: map['userProfilePic'],
-      rating: map['rating'],
-      comment: map['comment'],
-      date: DateTime.parse(map['date']),
-    );
-  }
+  return ReviewModel(
+    userName: (map['userName'] ?? 'Anonymous').toString(),
+    userProfilePic: (map['userProfilePic'] ?? '').toString(),
+    rating: ((map['rating'] ?? 0) as num).toDouble(),  
+    comment: (map['comment'] ?? '').toString(),
+    date: DateTime.parse(map['date'] ?? DateTime.now().toIso8601String()), userId: '',
+  );
+}
+
   Map<String, dynamic> toMap(){
     return {
       'userId': userId,
