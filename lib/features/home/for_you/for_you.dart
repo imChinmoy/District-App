@@ -364,7 +364,7 @@ class _ForYouScreenState extends ConsumerState<ForYouScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(60),
-                  child: Image.asset(a.image, height: 120, width: 120, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(height: 120, width: 120, decoration: BoxDecoration(color: Colors.grey[800], shape: BoxShape.circle))),
+                  child: Image.asset(a.imageUrl, height: 120, width: 120, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(height: 120, width: 120, decoration: BoxDecoration(color: Colors.grey[800], shape: BoxShape.circle))),
                 ),
                 const SizedBox(height: 8),
                 Text(a.name, style: const TextStyle(color: Colors.white, fontSize: 13), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),

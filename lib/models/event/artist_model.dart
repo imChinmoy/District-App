@@ -2,7 +2,7 @@ class ArtistModel {
   final String id;
   final String name;
   final String category;
-  final String image;
+  final String imageUrl;
   final double rating;
   final int upcomingEvents;
 
@@ -10,7 +10,7 @@ class ArtistModel {
     required this.id,
     required this.name,
     required this.category,
-    required this.image,
+    required this.imageUrl,
     required this.rating,
     required this.upcomingEvents,
   });
@@ -19,7 +19,7 @@ class ArtistModel {
         id: map['id'] ?? '',
         name: map['name'] ?? '',
         category: map['category'] ?? '',
-        image: map['image'] ?? '',
+        imageUrl: map['imageUrl'] ?? '',
         rating: (map['rating'] ?? 0).toDouble(),
         upcomingEvents: map['upcomingEvents'] ?? 0,
       );
@@ -28,7 +28,7 @@ class ArtistModel {
         'id': id,
         'name': name,
         'category': category,
-        'image': image,
+        'imageUrl': imageUrl,
         'rating': rating,
         'upcomingEvents': upcomingEvents,
       };

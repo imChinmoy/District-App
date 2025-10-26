@@ -1,6 +1,6 @@
 import 'package:district/models/Review_model.dart';
 import 'package:district/models/dining/menu_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class DiningModel {
   final String id;
@@ -18,7 +18,7 @@ class DiningModel {
   final double rating;
   final int totalReviews;
   final List<ReviewModel> reviews;
-  final bool isOpen; // CHANGED: Added final keyword
+  final bool isOpen;
   final String openingTime;
   final String closingTime;
   final double averageCostForTwo;

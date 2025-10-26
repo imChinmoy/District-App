@@ -10,13 +10,25 @@ class AppDatabase {
   static final _db = FirebaseFirestore.instance;
 
   Future<List<EventModel>> getAllEvents() async {
-    final data = await _db.collection('Events').get();
-    return data.docs.map((e) => EventModel.fromMap(e.data())).toList();
+    try {
+      final data = await _db.collection('events').get();
+      log('Fetched ${data.docs.length} events from Firestore.');
+      return data.docs.map((e) => EventModel.fromMap(e.data())).toList();
+    } catch (e) {
+      log("Firestore Error fetching events:", error: e);
+      return [];
+    }
   }
 
   Future<List<ArtistModel>> getAllArtists() async {
-    final data = await _db.collection('artists').get();
-    return data.docs.map((e) => ArtistModel.fromMap(e.data())).toList();
+    try {
+      final data = await _db.collection('artists').get();
+      log('Fetched ${data.docs.length} artists from Firestore.');
+      return data.docs.map((e) => ArtistModel.fromMap(e.data())).toList();
+    } catch (e) {
+      log("Firestore Error fetching artists:", error: e);
+      return [];
+    }
   }
 
   Future<EventModel?> findEvent(String id) async {

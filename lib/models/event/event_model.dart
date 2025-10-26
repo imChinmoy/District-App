@@ -1,6 +1,4 @@
-
 enum EventCategory { concert, exhibition, standup, festival }
-
 
 class EventModel {
   final String id;
@@ -43,20 +41,46 @@ class EventModel {
         'totalReviews': totalReviews,
       };
 
-  factory EventModel.fromMap(Map<String, dynamic> map) => EventModel(
-        id: map['id'] ?? '',
-        name: map['name'] ?? '',
-        description: map['description'] ?? '',
-        category: EventCategory.values.firstWhere(
-          (e) => e.name == map['category'],
-          orElse: () => EventCategory.concert,
-        ),
-        location: map['location'] ?? '',
-        startDate: DateTime.parse(map['startDate']),
-        endDate: DateTime.parse(map['endDate']),
-        price: (map['price'] ?? 0).toDouble(),
-        images: List<String>.from(map['images'] ?? []),
-        rating: (map['rating'] ?? 0).toDouble(),
-        totalReviews: map['totalReviews'] ?? 0,
-      );
+  factory EventModel.fromMap(Map<String, dynamic> map) {
+
+    DateTime _safeToDateTime(dynamic data) {
+      if (data == null) {
+        return DateTime(1970);
+      }
+      
+      if (data.runtimeType.toString() == 'Timestamp' || data.runtimeType.toString() == '_JsonQueryDocumentSnapshotTimestamp') {
+        try {
+          return data.toDate();
+        } catch (_) {
+          if (data is String) {
+            return DateTime.parse(data);
+          }
+        }
+      }
+      if (data is String) {
+        return DateTime.parse(data);
+      }
+
+      return DateTime(1970); 
+    }
+
+    return EventModel(
+      id: map['id'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      description: map['description'] as String? ?? '',
+      category: EventCategory.values.firstWhere(
+        (e) => e.name == map['category'],
+        orElse: () => EventCategory.concert,
+      ),
+      location: map['location'] as String? ?? '',
+      
+      startDate: _safeToDateTime(map['startDate']),
+      endDate: _safeToDateTime(map['endDate']),
+      
+      price: (map['price'] as num? ?? 0).toDouble(),
+      images: List<String>.from(map['images'] as List? ?? []),
+      rating: (map['rating'] as num? ?? 0).toDouble(),
+      totalReviews: map['totalReviews'] as int? ?? 0,
+    );
+  }
 }
