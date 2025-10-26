@@ -1,3 +1,4 @@
+import 'package:district/models/event/artist_model.dart';
 import 'package:district/models/mood_model.dart';
 import 'package:district/providers/program_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,21 +9,25 @@ import 'package:district/models/event/event_model.dart';
 import 'package:district/models/dining/dining_model.dart';
 import 'package:district/models/movie/movie_model.dart';
 
-final eventProvider = StateNotifierProvider<EventController, List<EventModel>>((
-  ref,
-) {
-  return EventController(ref.read(eventRepositoryProvider));
+final eventProvider = FutureProvider<List<EventModel>> ((ref) async {
+  final repo = ref.read(eventRepositoryProvider);
+  return repo.getAllEvents();
 });
 
-class EventController extends StateNotifier<List<EventModel>> {
-  final EventRepository _repo;
-  EventController(this._repo) : super([]);
+// class EventController extends StateNotifier<List<EventModel>> {
+//   final EventRepository _repo;
+//   EventController(this._repo) : super([]);
 
-  Future<void> fetchAllEvents() async {
-    final events = await _repo.getAllEvents();
-    state = events;
-  }
-}
+//   Future<void> fetchAllEvents() async {
+//     final events = await _repo.getAllEvents();
+//     state = events;
+//   }
+// }
+
+final artistProvider = FutureProvider<List<ArtistModel>>((ref) async {
+  final repo = ref.read(eventRepositoryProvider);
+  return repo.getArtists();
+});
 
 final diningProvider =
     StateNotifierProvider<DiningController, List<DiningModel>>((ref) {

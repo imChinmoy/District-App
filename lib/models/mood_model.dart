@@ -1,22 +1,22 @@
 class MoodCategory {
   final String id;
   final String title;
-  final String imagePath;
+  final String imageUrl;
 
   MoodCategory({
     required this.id,
     required this.title,
-    required this.imagePath,
+    required this.imageUrl,
   });
 
   factory MoodCategory.fromMap(Map<String, dynamic> json) => MoodCategory(
     id: json['id'] as String? ?? 'mood_unknown',
     title: json['title'] as String? ?? 'Untitled Mood',
-    imagePath: json['imagePath'] as String? ?? 'assets/placeholder.png',
+    imageUrl: json['imageUrl'] as String? ?? 'assets/placeholder.png',
   );
   factory MoodCategory.fromJson(Map<String, dynamic> json) => MoodCategory(
     id: json['id'] as String? ?? 'mood_unknown',
     title: json['title'] as String? ?? 'Untitled Mood',
-    imagePath: json['imagePath'] as String? ?? 'assets/placeholder.png',
+    imageUrl: json['imageUrl'] as String? ?? 'assets/placeholder.png',
   );
 }

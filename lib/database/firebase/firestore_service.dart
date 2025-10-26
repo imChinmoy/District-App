@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:district/models/event/artist_model.dart';
 import 'package:district/models/mood_model.dart';
 import '../../models/event/event_model.dart';
 import '../../models/dining/dining_model.dart';
@@ -11,6 +12,11 @@ class AppDatabase {
   Future<List<EventModel>> getAllEvents() async {
     final data = await _db.collection('Events').get();
     return data.docs.map((e) => EventModel.fromMap(e.data())).toList();
+  }
+
+  Future<List<ArtistModel>> getAllArtists() async {
+    final data = await _db.collection('artists').get();
+    return data.docs.map((e) => ArtistModel.fromMap(e.data())).toList();
   }
 
   Future<EventModel?> findEvent(String id) async {
