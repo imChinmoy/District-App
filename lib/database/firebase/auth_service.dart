@@ -38,6 +38,7 @@ class AuthService {
             uid: result.user!.uid,
             name: result.user!.displayName ?? '',
             email: result.user!.email!,
+            profileImageUrl: result.user!.photoURL
           )
         : null;
   }
