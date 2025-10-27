@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-// Providers
+
 final eventsProvider = FutureProvider<List<EventModel>>((ref) async {
   final response = await rootBundle.loadString('assets/event/events.json');
   final data = json.decode(response);

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:district/features/controllers/program_controller.dart';
 import 'package:go_router/go_router.dart';
-import 'package:district/features/home/dining/rest.dart';
 import 'package:shimmer/shimmer.dart';
 
 typedef FallbackImageBuilder = Widget Function();
