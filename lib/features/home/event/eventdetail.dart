@@ -44,8 +44,21 @@ class EventDetailPage extends ConsumerWidget {
       bottomNavigationBar: _buildBookButton(context),
     );
   }
+  
+  Widget _buildPlaceholder() {
+    return Container(
+      color: Colors.grey[900],
+      child: const Center(
+          child: Icon(Icons.restaurant, color: Colors.white54, size: 80)),
+    );
+  }
+  // Widget _buildSliverAppBar(BuildContext context) {
+
+    
 
   Widget _buildAppBar(BuildContext context, WidgetRef ref, bool isFavorite) {
+    final imageUrl = event.images.isNotEmpty ? event.images[0] : '';
+    final isNetworkImage = imageUrl.startsWith('http');
     return SliverAppBar(
       expandedHeight: 300,
       pinned: true,
@@ -69,13 +82,26 @@ class EventDetailPage extends ConsumerWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(event.images.isNotEmpty ? event.images[0] : '', fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: Colors.grey[800], child: const Icon(Icons.event, color: Colors.white54, size: 80))),
+            isNetworkImage
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  )
+                : Image.asset(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  ),
             Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withOpacity(0.7)]))),
+
           ],
         ),
       ),
     );
   }
+  
+  
 
   Widget _buildHeader() {
     return Column(

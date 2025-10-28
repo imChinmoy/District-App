@@ -3,6 +3,7 @@ import 'package:district/features/home/dining/dining.dart';
 import 'package:district/features/home/event/event.dart';
 import 'package:district/features/home/for_you/for_you.dart';
 import 'package:district/features/home/location/location.dart';
+import 'package:district/features/home/movies/movie.dart';
 import 'package:district/utils/colors.dart';
 import '../home/location/locationService.dart';
 import 'package:district/features/home/searchpage.dart';
@@ -36,12 +37,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     const ForYouScreen(),
     const DiningScreen(),
     const EventsScreen(),
-    const Center(
-      child: Text(
-        'Movies Content',
-        style: TextStyle(color: Colors.white, fontSize: 18),
-      ),
-    )
+    const MoviesScreen()
   ];
 
   @override

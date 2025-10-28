@@ -74,7 +74,16 @@ class RestaurantDetailPage extends ConsumerWidget {
     );
   }
 
+  
   Widget _buildSliverAppBar(BuildContext context) {
+  
+  void _favorite() {
+    print('marked');
+  }
+  final imageUrl = restaurant.images.isNotEmpty ? restaurant.images[0] : '';
+  final isNetworkImage = imageUrl.startsWith('http');
+  
+
     return SliverAppBar(
       expandedHeight: 300,
       pinned: true,
@@ -90,22 +99,24 @@ class RestaurantDetailPage extends ConsumerWidget {
         ),
         IconButton(
           icon: const Icon(Icons.favorite_border, color: Colors.white),
-          onPressed: () {},
+          onPressed: _favorite,
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              restaurant.images[0],
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: Colors.grey[800],
-                child: const Icon(Icons.restaurant,
-                    color: Colors.white54, size: 80),
-              ),
-            ),
+            isNetworkImage
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  )
+                : Image.asset(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -113,7 +124,7 @@ class RestaurantDetailPage extends ConsumerWidget {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.7),
+                    Colors.black.withOpacity(0.8),
                   ],
                 ),
               ),
@@ -123,6 +134,14 @@ class RestaurantDetailPage extends ConsumerWidget {
       ),
     );
   }
+  Widget _buildPlaceholder() {
+    return Container(
+      color: Colors.grey[900],
+      child: const Center(
+          child: Icon(Icons.restaurant, color: Colors.white54, size: 80)),
+    );
+  }
+
 
   Widget _buildHeader() {
     return Column(
@@ -287,6 +306,8 @@ class RestaurantDetailPage extends ConsumerWidget {
   }
 
   Widget _buildMenuItem(item) {
+    final imageUrl = item.imageUrl ?? '';
+    final isNetworkImage = imageUrl.startsWith('http');
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(15),
@@ -298,19 +319,21 @@ class RestaurantDetailPage extends ConsumerWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              item.imageUrl,
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                width: 80,
-                height: 80,
-                color: Colors.grey[800],
-                child: const Icon(Icons.fastfood,
-                    color: Colors.white54, size: 32),
-              ),
-            ),
+            child: isNetworkImage
+                ? Image.network(
+                    imageUrl,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildMenuPlaceholder(),
+                  )
+                : Image.asset(
+                    imageUrl,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildMenuPlaceholder(),
+                  ),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -372,6 +395,14 @@ class RestaurantDetailPage extends ConsumerWidget {
       ),
     );
   }
+  Widget _buildMenuPlaceholder() {
+    return Container(
+      width: 80,
+      height: 80,
+      color: Colors.grey[800],
+      child: const Icon(Icons.fastfood, color: Colors.white54, size: 32),
+    );
+  }
 
   Widget _buildReviews() {
     return Column(
@@ -394,12 +425,15 @@ class RestaurantDetailPage extends ConsumerWidget {
   }
 
   Widget _buildReviewCard(review) {
+    final profilePic = review.userProfilePic ?? '';
+    final isNetworkProfilePic = profilePic.startsWith('http');
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,9 +442,13 @@ class RestaurantDetailPage extends ConsumerWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage(review.userProfilePic),
-                onBackgroundImageError: (_, __) {},
-                child: review.userProfilePic.isEmpty
+                backgroundColor: Colors.grey[700],
+                backgroundImage: isNetworkProfilePic
+                    ? NetworkImage(profilePic)
+                    : profilePic.isNotEmpty
+                        ? AssetImage(profilePic) as ImageProvider
+                        : null,
+                child: profilePic.isEmpty
                     ? const Icon(Icons.person, color: Colors.white)
                     : null,
               ),
@@ -423,7 +461,7 @@ class RestaurantDetailPage extends ConsumerWidget {
                       review.userName,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -434,7 +472,7 @@ class RestaurantDetailPage extends ConsumerWidget {
                               ? Icons.star
                               : Icons.star_border,
                           color: Colors.amber,
-                          size: 14,
+                          size: 16,
                         );
                       }),
                     ),
@@ -448,7 +486,7 @@ class RestaurantDetailPage extends ConsumerWidget {
             review.comment,
             style: TextStyle(
               color: Colors.grey[300],
-              fontSize: 13,
+              fontSize: 14,
               height: 1.4,
             ),
           ),
@@ -457,3 +495,4 @@ class RestaurantDetailPage extends ConsumerWidget {
     );
   }
 }
+

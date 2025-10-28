@@ -1,54 +1,122 @@
-import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:district/features/controllers/program_controller.dart';
 import 'package:district/features/home/movies/moviedetail.dart';
 import 'package:district/models/movie/movie_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final moviesProvider = FutureProvider<List<MovieModel>>((ref) async {
-  final response = await rootBundle.loadString('assets/movies/movies.json');
-  final data = json.decode(response);
-  return (data['movies'] as List).map((m) => MovieModel.fromMap(m)).toList();
-});
 
-class MoviesScreen extends ConsumerStatefulWidget {
+class MoviesScreen extends ConsumerWidget {
   const MoviesScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<MoviesScreen> createState() => _MoviesScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
 
-class _MoviesScreenState extends ConsumerState<MoviesScreen> {
-  int _currentIndex = 0;
-  final CarouselSliderController _carouselController = CarouselSliderController();
-
-  @override
-  Widget build(BuildContext context) {
-    final moviesAsync = ref.watch(moviesProvider);
+    final moviesAsync = ref.watch(movieProvider); 
 
     return Container(
       color: Colors.black,
       child: moviesAsync.when(
-        data: (movies) => SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              _buildSectionHeading('IN THE SPOTLIGHT'),
-              const SizedBox(height: 20),
-              _buildSpotlightCarousel(movies),
-              const SizedBox(height: 40),
-              _buildSectionHeading('ONLY IN THEATRES'),
-              const SizedBox(height: 20),
-              _buildMoviesGrid(movies),
-              const SizedBox(height: 20),
-            ],
-          ),
+        data: (movies) {
+          if (movies.isEmpty) {
+            return const ErrorMessageWrapper(error: 'No movies found.', isRetryable: true);
+          }
+          return MovieContent(movies: movies);
+        },
+        loading: () => const LoadingMessageWrapper(),
+        error: (e, stack) => ErrorMessageWrapper(error: e.toString(), isRetryable: true),
+      ),
+    );
+  }
+}
+
+
+class LoadingMessageWrapper extends StatelessWidget {
+  const LoadingMessageWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 300,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: Color(0xFFE50914)),
+            SizedBox(height: 16),
+            Text('Loading...', style: TextStyle(color: Colors.white70)),
+          ],
         ),
-        loading: () => _buildMessage('Loading...', isLoading: true),
-        error: (e, _) => _buildMessage('Error: $e', isError: true),
+      ),
+    );
+  }
+}
+
+class ErrorMessageWrapper extends ConsumerWidget {
+  final Object error;
+  final bool isRetryable;
+  const ErrorMessageWrapper({super.key, required this.error, this.isRetryable = false});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Color(0xFFE50914), size: 48),
+            const SizedBox(height: 16),
+            Text('Error: ${error.toString()}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70)),
+            if (isRetryable) ...[
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(movieProvider), 
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE50914)),
+                child: const Text('Try Again', style: TextStyle(color: Colors.white)),
+              ),
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class MovieContent extends ConsumerStatefulWidget {
+  final List<MovieModel> movies;
+  const MovieContent({super.key, required this.movies});
+
+  @override
+  ConsumerState<MovieContent> createState() => _MovieContentState();
+}
+
+class _MovieContentState extends ConsumerState<MovieContent> {
+  int _currentIndex = 0;
+  final CarouselController _carouselController = CarouselController();
+
+  @override
+  Widget build(BuildContext context) {
+    final movies = widget.movies;
+
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20),
+          _buildSectionHeading('IN THE SPOTLIGHT'),
+          const SizedBox(height: 20),
+          _buildSpotlightCarousel(movies),
+          const SizedBox(height: 40),
+          _buildSectionHeading('ONLY IN THEATRES'),
+          const SizedBox(height: 20),
+          _buildMoviesGrid(movies),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }
@@ -64,10 +132,10 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
             child: Text(
               title,
               style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.5,
+                color: Colors.redAccent,
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 2.0,
               ),
             ),
           ),
@@ -83,8 +151,8 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            reverse ? Colors.grey.withOpacity(0.3) : Colors.transparent,
-            reverse ? Colors.transparent : Colors.grey.withOpacity(0.3),
+            reverse ? Colors.grey.withOpacity(0.5) : Colors.transparent,
+            reverse ? Colors.transparent : Colors.grey.withOpacity(0.5),
           ],
         ),
       ),
@@ -92,16 +160,19 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
   }
 
   Widget _buildSpotlightCarousel(List<MovieModel> movies) {
+    if (movies.isEmpty) return const SizedBox.shrink();
+    final CarouselSliderController _carouselController = CarouselSliderController();
+
     return Column(
       children: [
         CarouselSlider.builder(
           carouselController: _carouselController,
           itemCount: movies.length,
           options: CarouselOptions(
-            height: 480,
-            viewportFraction: 0.88,
+            height: 500,
+            viewportFraction: 0.85,
             enlargeCenterPage: true,
-            enlargeFactor: 0.15,
+            enlargeFactor: 0.18,
             autoPlay: true,
             autoPlayInterval: const Duration(seconds: 4),
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
@@ -124,13 +195,14 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: movies.asMap().entries.map((entry) {
-            return Container(
-              width: _currentIndex == entry.key ? 20 : 6,
-              height: 6,
-              margin: const EdgeInsets.symmetric(horizontal: 3),
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: _currentIndex == entry.key ? 24 : 8,
+              height: 4,
+              margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3),
-                color: _currentIndex == entry.key ? Colors.white : Colors.white.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(2),
+                color: _currentIndex == entry.key ? const Color(0xFFE50914) : Colors.white.withOpacity(0.4),
               ),
             );
           }).toList(),
@@ -147,9 +219,9 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.65,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 16,
+          childAspectRatio: 0.60,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 24,
         ),
         itemCount: movies.length,
         itemBuilder: (context, index) => MovieCard(
@@ -164,18 +236,34 @@ class _MoviesScreenState extends ConsumerState<MoviesScreen> {
       ),
     );
   }
+}
 
-  Widget _buildMessage(String message, {bool isLoading = false, bool isError = false}) {
+class ErrorWidget extends ConsumerWidget {
+  final Object error;
+  final bool isRetryable;
+  const ErrorWidget({super.key, required this.error, this.isRetryable = false});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height - 200,
+      height: MediaQuery.of(context).size.height,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (isLoading) const CircularProgressIndicator(color: Colors.blue),
-            if (isError) const Icon(Icons.error_outline, color: Colors.red, size: 48),
-            SizedBox(height: isLoading || isError ? 16 : 0),
-            Text(message, style: const TextStyle(color: Colors.white70)),
+            const Icon(Icons.error_outline, color: Color(0xFFE50914), size: 48),
+            const SizedBox(height: 16),
+            Text('Error: ${error.toString()}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70)),
+            if (isRetryable) ...[
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.watch(movieProvider),
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE50914)),
+                child: const Text('Try Again', style: TextStyle(color: Colors.white)),
+              ),
+            ]
           ],
         ),
       ),
@@ -196,17 +284,17 @@ class SpotlightMovieCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 6),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.6),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+              color: Colors.red.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -217,10 +305,10 @@ class SpotlightMovieCard extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.7),
+                      Colors.black.withOpacity(0.0),
+                      Colors.black.withOpacity(0.9),
                     ],
-                    stops: const [0.5, 1.0],
+                    stops: const [0.4, 1.0],
                   ),
                 ),
               ),
@@ -229,7 +317,7 @@ class SpotlightMovieCard extends StatelessWidget {
                 left: 0,
                 right: 0,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -238,32 +326,41 @@ class SpotlightMovieCard extends StatelessWidget {
                         movie.title,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          shadows: [Shadow(blurRadius: 4, color: Colors.black)],
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        '${movie.rating} | ${movie.language}',
-                        style: TextStyle(
-                          color: Colors.grey[300],
-                          fontSize: 13,
-                        ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${movie.averageRating.toStringAsFixed(1)} | ${movie.language}',
+                            style: TextStyle(
+                              color: Colors.grey[300],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: onTap,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                          backgroundColor: const Color(0xFFE50914),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         child: const Text(
-                          'Book tickets',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                          'BOOK NOW',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                         ),
                       ),
                     ],
@@ -282,18 +379,25 @@ class SpotlightMovieCard extends StatelessWidget {
       return _buildPlaceholder();
     }
 
-    return Image.asset(
-      movie.posterUrls[0],
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => _buildPlaceholder(),
-    );
+    final imageUrl = movie.posterUrls[0];
+    return imageUrl.startsWith('http')
+        ? Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildPlaceholder(),
+          )
+        : Image.asset(
+            imageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildPlaceholder(),
+          );
   }
 
   Widget _buildPlaceholder() {
     return Container(
-      color: Colors.grey[800],
+      color: Colors.grey[900],
       child: const Center(
-        child: Icon(Icons.movie, color: Colors.white54, size: 80),
+        child: Icon(Icons.movie, color: Colors.white38, size: 80),
       ),
     );
   }
@@ -314,9 +418,9 @@ class MovieCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.4),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              color: Colors.black.withOpacity(0.5),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -336,7 +440,7 @@ class MovieCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withOpacity(0.7),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -359,18 +463,24 @@ class MovieCard extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    '${movie.rating} | ${movie.language}',
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 12,
-                    ),
+                  Row(
+                    children: [
+                      const Icon(Icons.star, color: Colors.amber, size: 12),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${movie.averageRating.toStringAsFixed(1)} | ${movie.language}',
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -386,20 +496,27 @@ class MovieCard extends StatelessWidget {
       return _buildPlaceholder();
     }
 
-    return Image.asset(
-      movie.posterUrls[0],
-      fit: BoxFit.cover,
-      width: double.infinity,
-      height: double.infinity,
-      errorBuilder: (_, __, ___) => _buildPlaceholder(),
-    );
+    final imageUrl = movie.posterUrls[0];
+    return imageUrl.startsWith('http')
+        ? Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+            errorBuilder: (_, __, ___) => _buildPlaceholder())
+        : Image.asset(
+            imageUrl,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+            errorBuilder: (_, __, ___) => _buildPlaceholder());
   }
 
   Widget _buildPlaceholder() {
     return Container(
-      color: Colors.grey[800],
+      color: Colors.grey[900],
       child: const Center(
-        child: Icon(Icons.movie, color: Colors.white54, size: 60),
+        child: Icon(Icons.movie, color: Colors.white38, size: 60),
       ),
     );
   }

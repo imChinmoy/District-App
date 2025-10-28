@@ -306,7 +306,8 @@ class _ProfileState extends ConsumerState<Profile> {
           color: cardColor,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
-            onTap: () => log('$title tapped'),
+            onTap: () => context.push('/home/profile/tableBookings'),
+
             borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.all(12.0),
@@ -321,7 +322,7 @@ class _ProfileState extends ConsumerState<Profile> {
                       color: Colors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                    ),
+                    ), 
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
