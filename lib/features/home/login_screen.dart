@@ -112,7 +112,7 @@ class LoginScreen extends ConsumerWidget {
                                     const Duration(milliseconds: 500),
                                   );
                                   if (context.mounted) {
-                                    context.go('/home');
+                                    context.go('/guest');
                                   }
                                   ref.read(isLoadingProvider.notifier).state =
                                       false;
