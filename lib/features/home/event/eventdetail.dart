@@ -1,24 +1,29 @@
-
 import 'package:district/features/home/booking_page.dart';
 import 'package:district/models/event/event_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class EventDetailPage extends StatelessWidget {
+final favoriteEventsProvider = StateProvider<Set<String>>((ref) => {});
+
+class EventDetailPage extends ConsumerWidget {
   final EventModel event;
 
   const EventDetailPage({Key? key, required this.event}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favorites = ref.watch(favoriteEventsProvider);
+    final isFavorite = favorites.contains(event.id);
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(context),
+          _buildAppBar(context, ref, isFavorite),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -39,27 +44,38 @@ class EventDetailPage extends StatelessWidget {
       bottomNavigationBar: _buildBookButton(context),
     );
   }
+  
+  Widget _buildPlaceholder() {
+    return Container(
+      color: Colors.grey[900],
+      child: const Center(
+          child: Icon(Icons.restaurant, color: Colors.white54, size: 80)),
+    );
+  }
+  // Widget _buildSliverAppBar(BuildContext context) {
 
-  Widget _buildSliverAppBar(BuildContext context) {
+    
 
+  Widget _buildAppBar(BuildContext context, WidgetRef ref, bool isFavorite) {
     final imageUrl = event.images.isNotEmpty ? event.images[0] : '';
     final isNetworkImage = imageUrl.startsWith('http');
     return SliverAppBar(
       expandedHeight: 300,
       pinned: true,
       backgroundColor: Colors.black,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.pop(context),
-      ),
+      leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context)),
       actions: [
+        IconButton(icon: const Icon(Icons.share, color: Colors.white), onPressed: () {}),
         IconButton(
-          icon: const Icon(Icons.share, color: Colors.white),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.favorite_border, color: Colors.white),
-          onPressed: () {},
+          icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: isFavorite ? Colors.red : Colors.white),
+          onPressed: () {
+            final favorites = ref.read(favoriteEventsProvider.notifier);
+            if (isFavorite) {
+              favorites.state = {...favorites.state}..remove(event.id);
+            } else {
+              favorites.state = {...favorites.state, event.id};
+            }
+          },
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -77,61 +93,27 @@ class EventDetailPage extends StatelessWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => _buildPlaceholder(),
                   ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
-                ),
-              ),
-            ),
+            Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withOpacity(0.7)]))),
+
           ],
         ),
       ),
     );
   }
   
-  Widget _buildPlaceholder() {
-    return Container(
-      color: Colors.grey[900],
-      child: const Center(
-          child: Icon(Icons.restaurant, color: Colors.white54, size: 80)),
-    );
-  }
+  
 
   Widget _buildHeader() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: _getCategoryColor(),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            _getCategoryName(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          decoration: BoxDecoration(color: _getCategoryColor(), borderRadius: BorderRadius.circular(20)),
+          child: Text(_getCategoryName(), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
         ),
         const SizedBox(height: 15),
-        Text(
-          event.name,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        Text(event.name, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -141,15 +123,9 @@ class EventDetailPage extends StatelessWidget {
       children: [
         _buildInfoRow(Icons.location_on, event.location),
         const SizedBox(height: 10),
-        _buildInfoRow(
-          Icons.calendar_today,
-          DateFormat('EEEE, MMMM d, y').format(event.startDate),
-        ),
+        _buildInfoRow(Icons.calendar_today, DateFormat('EEEE, MMMM d, y').format(event.startDate)),
         const SizedBox(height: 10),
-        _buildInfoRow(
-          Icons.access_time,
-          '${DateFormat('h:mm a').format(event.startDate)} - ${DateFormat('h:mm a').format(event.endDate)}',
-        ),
+        _buildInfoRow(Icons.access_time, '${DateFormat('h:mm a').format(event.startDate)} - ${DateFormat('h:mm a').format(event.endDate)}'),
       ],
     );
   }
@@ -159,15 +135,7 @@ class EventDetailPage extends StatelessWidget {
       children: [
         Icon(icon, color: Colors.grey, size: 20),
         const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: Colors.grey[300],
-              fontSize: 14,
-            ),
-          ),
-        ),
+        Expanded(child: Text(text, style: TextStyle(color: Colors.grey[300], fontSize: 14))),
       ],
     );
   }
@@ -176,23 +144,9 @@ class EventDetailPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'About Event',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        const Text('About Event', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
         const SizedBox(height: 15),
-        Text(
-          event.description,
-          style: TextStyle(
-            color: Colors.grey[300],
-            fontSize: 14,
-            height: 1.5,
-          ),
-        ),
+        Text(event.description, style: TextStyle(color: Colors.grey[300], fontSize: 14, height: 1.5)),
       ],
     );
   }
@@ -204,52 +158,21 @@ class EventDetailPage extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Ticket Price',
-              style: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 14,
-              ),
-            ),
+            Text('Ticket Price', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
             const SizedBox(height: 5),
-            Text(
-              event.price == 0 ? 'FREE' : '₹${event.price.toInt()}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(event.price == 0 ? 'FREE' : '₹${event.price.toInt()}', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
           ],
         ),
-   
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[700]!),
-          ),
+          decoration: BoxDecoration(color: Colors.grey[900], borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey[700]!)),
           child: Row(
             children: [
               const Icon(Icons.star, color: Colors.amber, size: 24),
               const SizedBox(width: 8),
-              Text(
-                event.rating.toStringAsFixed(1),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text(event.rating.toStringAsFixed(1), style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(width: 8),
-              Text(
-                '(${event.totalReviews})',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 14,
-                ),
-              ),
+              Text('(${event.totalReviews})', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
             ],
           ),
         ),
@@ -263,34 +186,9 @@ class EventDetailPage extends StatelessWidget {
       color: Colors.grey[900],
       child: SafeArea(
         child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BookingPage(
-                itemId: event.id,
-                itemName: event.name,
-                bookingType: BookingType.event,
-                additionalInfo: event.location,
-                ),
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: const Text(
-            'Book Now',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BookingPage(itemId: event.id, itemName: event.name, bookingType: BookingType.event, additionalInfo: event.location))),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          child: const Text('Book Now', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         ),
       ),
     );
@@ -298,27 +196,19 @@ class EventDetailPage extends StatelessWidget {
 
   String _getCategoryName() {
     switch (event.category) {
-      case EventCategory.concert:
-        return 'CONCERT';
-      case EventCategory.exhibition:
-        return 'EXHIBITION';
-      case EventCategory.standup:
-        return 'STAND-UP';
-      case EventCategory.festival:
-        return 'FESTIVAL';
-      }
+      case EventCategory.concert: return 'CONCERT';
+      case EventCategory.exhibition: return 'EXHIBITION';
+      case EventCategory.standup: return 'STAND-UP';
+      case EventCategory.festival: return 'FESTIVAL';
+    }
   }
 
   Color _getCategoryColor() {
     switch (event.category) {
-      case EventCategory.concert:
-        return Colors.purple[700]!;
-      case EventCategory.exhibition:
-        return Colors.blue[700]!;
-      case EventCategory.standup:
-        return Colors.orange[700]!;
-      case EventCategory.festival:
-        return Colors.pink[700]!;
-      }
+      case EventCategory.concert: return Colors.purple[700]!;
+      case EventCategory.exhibition: return Colors.blue[700]!;
+      case EventCategory.standup: return Colors.orange[700]!;
+      case EventCategory.festival: return Colors.pink[700]!;
+    }
   }
 }

@@ -161,7 +161,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Searchpage()),
+            MaterialPageRoute(builder: (context) => const SearchPage()),
           );
         },
         style: ElevatedButton.styleFrom(
