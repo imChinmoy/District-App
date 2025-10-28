@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 enum ScreenType { twoD, threeD, imax, fourDX }
 
 class ShowtimeModel {
@@ -25,24 +27,37 @@ class ShowtimeModel {
         'id': id,
         'cinemaName': cinemaName,
         'address': address,
-        'time': time.toIso8601String(),
+        'time': time,
         'price': price,
         'availableSeats': availableSeats,
         'totalSeats': totalSeats,
         'screenType': screenType.name,
       };
 
-  factory ShowtimeModel.fromMap(Map<String, dynamic> map) => ShowtimeModel(
-        id: map['id'] ?? '',
-        cinemaName: map['cinemaName'] ?? '',
-        address: map['address'] ?? '',
-        time: DateTime.parse(map['time']),
-        price: (map['price'] ?? 0).toDouble(),
-        availableSeats: map['availableSeats'] ?? 0,
-        totalSeats: map['totalSeats'] ?? 0,
-        screenType: ScreenType.values.firstWhere(
-          (e) => e.name == map['screenType'],
-          orElse: () => ScreenType.twoD,
-        ),
-      );
+  factory ShowtimeModel.fromMap(Map<String, dynamic> map) {
+    DateTime parsedTime;
+    final timeData = map['time'];
+
+    if (timeData is String) {
+      parsedTime = DateTime.parse(timeData);
+    } else if (timeData is Timestamp) {
+      parsedTime = timeData.toDate();
+    } else {
+      parsedTime = DateTime.now();
+    }
+
+    return ShowtimeModel(
+      id: map['id'] ?? '',
+      cinemaName: map['cinemaName'] ?? '',
+      address: map['address'] ?? '',
+      time: parsedTime,
+      price: (map['price'] ?? 0).toDouble(),
+      availableSeats: map['availableSeats'] ?? 0,
+      totalSeats: map['totalSeats'] ?? 0,
+      screenType: ScreenType.values.firstWhere(
+        (e) => e.name == map['screenType'],
+        orElse: () => ScreenType.twoD,
+      ),
+    );
+  }
 }

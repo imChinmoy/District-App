@@ -8,7 +8,7 @@ class MovieModel {
   final String genre;
   final String language;
   final String duration;
-  final String rating; // e.g. "PG-13"
+  final String rating;
   final List<String> cast;
   final List<String> crew;
   final List<String> posterUrls;
@@ -53,28 +53,30 @@ class MovieModel {
     };
   }
 
-  factory MovieModel.fromMap(Map<String, dynamic> map) {
-  return MovieModel(
-    id: (map['id'] ?? '').toString(),
-    title: (map['title'] ?? 'Unknown').toString(),
-    description: (map['description'] ?? '').toString(),
-    genre: (map['genre'] ?? '').toString(),
-    language: (map['language'] ?? 'Unknown').toString(),
-    duration: (map['duration'] ?? '').toString(),
-    rating: (map['rating'] ?? 'N/A').toString(),
-    cast: (map['cast'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-    crew: (map['crew'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-    posterUrls: (map['posterUrls'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-    averageRating: ((map['averageRating'] ?? 0) as num).toDouble(),
-    totalReviews: (map['totalReviews'] ?? 0) as int,
-    showtimes: (map['showtimes'] as List<dynamic>?)
-            ?.map((s) => ShowtimeModel.fromMap(s as Map<String, dynamic>))
-            .toList() ??
-        [],
-    reviews: (map['reviews'] as List<dynamic>?)
-            ?.map((r) => ReviewModel.fromMap(r as Map<String, dynamic>))
-            .toList() ??
-        [],
-  );
-}
+  factory MovieModel.fromMap(Map<String, dynamic> map, [String? docId]) {
+    return MovieModel(
+      id: docId ?? (map['id'] ?? '').toString(),
+      title: (map['title'] ?? 'Unknown').toString(),
+      description: (map['description'] ?? '').toString(),
+      genre: (map['genre'] ?? '').toString(),
+      language: (map['language'] ?? 'Unknown').toString(),
+      duration: (map['duration'] ?? '').toString(),
+      rating: (map['rating'] ?? 'N/A').toString(),
+      cast: (map['cast'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      crew: (map['crew'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      posterUrls: (map['posterUrls'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      averageRating: ((map['averageRating'] ?? 0) as num).toDouble(),
+      totalReviews: (map['totalReviews'] ?? 0) as int,
+      showtimes: (map['showtimes'] as List<dynamic>?)
+          ?.where((s) => s is Map<String, dynamic>)
+          .map((s) => ShowtimeModel.fromMap(s as Map<String, dynamic>))
+          .toList() ??
+          [],
+      reviews: (map['reviews'] as List<dynamic>?)
+          ?.where((r) => r is Map<String, dynamic>)
+          .map((r) => ReviewModel.fromMap(r as Map<String, dynamic>))
+          .toList() ??
+          [],
+    );
+  }
 }

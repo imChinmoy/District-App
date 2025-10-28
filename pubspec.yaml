@@ -45,6 +45,9 @@ dependencies:
   intl: ^0.18.0
   location: ^8.0.1
   shimmer: ^3.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider:  ^2.1.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0

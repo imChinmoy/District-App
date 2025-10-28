@@ -2,6 +2,7 @@ import 'package:district/features/controllers/booking_controller.dart';
 import 'package:district/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 enum BookingType { dining, event, movie, other }
 
@@ -246,17 +247,28 @@ class _BookingPageState extends ConsumerState<BookingPage> {
   }
 
   void _confirmBooking() {
-    final bookingData = {
-      '${_getTypeString()}Id': widget.itemId,
-      '${_getTypeString()}Name': widget.itemName,
-      'date': selectedDate!.toIso8601String(),
-      'time': '${selectedTime!.hour}:${selectedTime!.minute}',
-      'count': count,
-      'bookingTime': DateTime.now().toIso8601String(),
-      'status': 'confirmed',
-    };
-
-    ref.read(bookingControllerProvider.notifier).addBooking(_getTypeString(), widget.itemId, 'user_001', bookingData);
+    final user = FirebaseAuth.instance.currentUser;
+  if (user == null || selectedDate == null || selectedTime == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please log in and select date & time.')),
+    );
+    return;
+  }
+    
+    final type = _getTypeString();
+      final bookingData = {
+    '${type}Id': widget.itemId,
+    '${type}Name': widget.itemName,
+    'userId': user.uid,
+    'userEmail': user.email ?? '',
+    'userName': user.displayName ?? 'Guest',
+    'date': selectedDate!.toIso8601String(),
+    'time': '${selectedTime!.hour}:${selectedTime!.minute}',
+    'count': count,
+    'bookingTime': DateTime.now().toIso8601String(),
+    'status': 'confirmed',
+  };
+    ref.read(bookingControllerProvider.notifier).addBooking(_getTypeString(), widget.itemId, user.uid , bookingData);
 
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(

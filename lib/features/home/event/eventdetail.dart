@@ -41,6 +41,9 @@ class EventDetailPage extends StatelessWidget {
   }
 
   Widget _buildSliverAppBar(BuildContext context) {
+
+    final imageUrl = event.images.isNotEmpty ? event.images[0] : '';
+    final isNetworkImage = imageUrl.startsWith('http');
     return SliverAppBar(
       expandedHeight: 300,
       pinned: true,
@@ -63,16 +66,17 @@ class EventDetailPage extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              event.images.isNotEmpty
-                  ? event.images[0]
-                  : 'assets/events/default.jpg',
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: Colors.grey[800],
-                child: const Icon(Icons.event, color: Colors.white54, size: 80),
-              ),
-            ),
+            isNetworkImage
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  )
+                : Image.asset(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -88,6 +92,14 @@ class EventDetailPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+  
+  Widget _buildPlaceholder() {
+    return Container(
+      color: Colors.grey[900],
+      child: const Center(
+          child: Icon(Icons.restaurant, color: Colors.white54, size: 80)),
     );
   }
 

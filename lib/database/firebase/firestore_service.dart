@@ -67,8 +67,14 @@ class AppDatabase {
   }
 
   Future<List<MovieModel>> getAllMovies() async {
-    final data = await _db.collection('Movies').get();
+    try{
+      final data = await _db.collection('movies').get();
     return data.docs.map((e) => MovieModel.fromMap(e.data())).toList();
+    }
+    catch(e){
+      log("Error : ", error: e);
+      return [];
+    }
   }
 
   Future<MovieModel?> findMovie(String id) async {

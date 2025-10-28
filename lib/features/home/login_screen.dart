@@ -1,11 +1,12 @@
 import 'package:district/utils/colors.dart';
 import 'package:district/features/home/home_screen.dart';
 import 'package:district/features/auth/verification.dart';
-import 'package:district/providers/auth_provider.dart'; // <-- make sure this path is correct
+import 'package:district/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import 'package:go_router/go_router.dart';
 
 final iconControllerProvider = Provider<PageController>((ref) {
   return PageController(viewportFraction: 0.4, initialPage: 10000);
@@ -58,10 +59,7 @@ class LoginScreen extends ConsumerWidget {
     try {
       await ref.read(authProvider.notifier).signInWithGoogle();
       if (context.mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
+        context.go('/home');
       }
     } catch (e) {
       ScaffoldMessenger.of(
@@ -113,13 +111,7 @@ class LoginScreen extends ConsumerWidget {
                                     const Duration(milliseconds: 500),
                                   );
                                   if (context.mounted) {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const HomeScreen(),
-                                      ),
-                                    );
+                                    context.go('/home');
                                   }
                                   ref.read(isLoadingProvider.notifier).state =
                                       false;
@@ -417,7 +409,6 @@ class LoginScreen extends ConsumerWidget {
   }
 }
 
-// ================= AUTO SCROLL COMPONENT =================
 class AutoScrollPageView extends ConsumerStatefulWidget {
   const AutoScrollPageView({super.key, required this.items});
   final List<Map<String, dynamic>> items;

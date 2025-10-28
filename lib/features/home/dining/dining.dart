@@ -3,55 +3,68 @@ import 'package:district/models/dining/dining_model.dart';
 import 'package:district/models/mood_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:district/features/controllers/program_controller.dart';
+import 'package:district/features/controllers/program_controller.dart'; 
 import 'package:go_router/go_router.dart';
-import 'package:district/features/home/dining/rest.dart';
 import 'package:shimmer/shimmer.dart';
 
+
+
 typedef FallbackImageBuilder = Widget Function();
+
+final diningHomeDataProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  final diningFuture = ref.watch(diningProvider.future);
+  final moodFuture = ref.watch(diningTypeProvider.future);
+
+  final results = await Future.wait([diningFuture, moodFuture]);
+
+  return {
+    'diningList': results[0] as List<DiningModel>,
+    'moodCategories': results[1] as List<MoodCategory>,
+  };
+});
 
 class DiningScreen extends ConsumerWidget {
   const DiningScreen({super.key});
 
-  Future<void> _loadData(WidgetRef ref) async {
-    await Future.wait([
-      ref.read(diningProvider.notifier).fetchAllDining(),
-      ref.read(diningTypeProvider.notifier).diningType(),
-    ]);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    _loadData(ref);
-
-    final diningList = ref.watch(diningProvider);
-    final moodCategories = ref.watch(diningTypeProvider);
     
-    final bool isLoading = diningList.isEmpty || moodCategories.isEmpty;
+    final diningHomeDataAsync = ref.watch(diningHomeDataProvider);
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: RefreshIndicator(
-        onRefresh: () => _loadData(ref),
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              const _SectionHeading('IN THE MOOD FOR'),
-              const SizedBox(height: 24),
-              isLoading 
-                  ? const _MoodSectionSkeleton() 
-                  : _MoodSection(categories: moodCategories),
-              const SizedBox(height: 40),
-              const _SectionHeading('ALL RESTAURANTS'),
-              const SizedBox(height: 24),
-              isLoading 
-                  ? const _RestaurantsSectionSkeleton() 
-                  : _RestaurantsSection(restaurants: diningList),
-              const SizedBox(height: 40),
-            ],
+        onRefresh: () => ref.refresh(diningHomeDataProvider.future),
+        child: diningHomeDataAsync.when(
+          data: (data) {
+            final diningList = data['diningList'] as List<DiningModel>;
+            final moodCategories = data['moodCategories'] as List<MoodCategory>;
+
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  const _SectionHeading('IN THE MOOD FOR'),
+                  const SizedBox(height: 24),
+                  moodCategories.isEmpty
+                      ? const _MessageWidget(message: 'No categories found.')
+                      : _MoodSection(categories: moodCategories),
+                  const SizedBox(height: 40),
+                  const _SectionHeading('ALL RESTAURANTS'),
+                  const SizedBox(height: 24),
+                  diningList.isEmpty
+                      ? const _MessageWidget(message: 'No restaurants found.')
+                      : _RestaurantsSection(restaurants: diningList),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            );
+          },
+          loading: () => const Center(child: _MessageWidget(message: 'Loading...', isLoading: true)),
+          error: (e, stack) => Center(
+            child: _MessageWidget(message: 'Error loading data: $e', isError: true),
           ),
         ),
       ),
@@ -216,10 +229,11 @@ class _RestaurantsSection extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       itemBuilder: (context, index) {
+        final restaurant = restaurants[index];
         return RestaurantCard(
-          restaurant: restaurants[index],
+          restaurant: restaurant,
           onTap: () {
-            context.push('/dining/${restaurants[index].id}');
+            context.push('/home/dining/detail', extra: restaurant);
           },
         );
       },
@@ -252,7 +266,6 @@ class _RestaurantsSectionSkeleton extends StatelessWidget {
     );
   }
 }
-
 
 class _ImageLoader extends StatelessWidget {
   final String? imageUrl;
@@ -324,7 +337,7 @@ class _MessageWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (isLoading)  CircularProgressIndicator(color: AppColors.dining),
+            if (isLoading) CircularProgressIndicator(color: AppColors.dining),
             if (isError)
               const Icon(Icons.error_outline, color: Colors.red, size: 48),
             SizedBox(height: isLoading || isError ? 16 : 0),
