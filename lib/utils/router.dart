@@ -29,7 +29,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const HomeScreen(),//change to LoginScreen()
+        builder: (context, state) => const LoginScreen(),//change to LoginScreen()
       ),
       GoRoute(
         path: '/home',
@@ -41,12 +41,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
         ]
       ),
+      GoRoute(
+       path: '/guest',
+      builder: (context, state) => const HomeScreen(), // or GuestHomeScreen
+     ),
     ],
     redirect: (context, state) {
       final user = FirebaseAuth.instance.currentUser;
       final loggingIn = state.matchedLocation == '/login';
+      final isGuest = state.matchedLocation == '/guest';
 
-      if (user == null && !loggingIn) return '/login';
+      if (user == null && !loggingIn && !isGuest) return '/login';
       if (user != null && loggingIn) return '/home';
       return null;
     },

@@ -4,6 +4,7 @@ import 'package:district/features/auth/verification.dart';
 import 'package:district/providers/auth_provider.dart'; // <-- make sure this path is correct
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 
@@ -104,26 +105,14 @@ class LoginScreen extends ConsumerWidget {
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
                         child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () async {
-                                  ref.read(isLoadingProvider.notifier).state =
-                                      true;
-                                  await Future.delayed(
-                                    const Duration(milliseconds: 500),
-                                  );
-                                  if (context.mounted) {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const HomeScreen(),
-                                      ),
-                                    );
-                                  }
-                                  ref.read(isLoadingProvider.notifier).state =
-                                      false;
-                                },
+                          onPressed: isLoading ? null : () async {
+                           ref.read(isLoadingProvider.notifier).state = true;
+                           await Future.delayed(const Duration(milliseconds: 500));
+                           if (context.mounted) {
+                            context.go('/guest');
+                           }
+                           ref.read(isLoadingProvider.notifier).state = false;
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(
                               107,
