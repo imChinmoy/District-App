@@ -29,7 +29,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => const HomeScreen(),//change to LoginScreen()
       ),
       GoRoute(
         path: '/home',

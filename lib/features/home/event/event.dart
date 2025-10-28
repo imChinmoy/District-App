@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:district/features/controllers/program_controller.dart';
 import 'package:district/features/home/event/categoryevent.dart';
 import 'package:district/features/home/event/eventdetail.dart';
@@ -6,7 +5,6 @@ import 'package:district/models/event/artist_model.dart';
 import 'package:district/models/event/event_model.dart';
 import 'package:district/utils/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -82,20 +80,6 @@ class _SectionHeading extends StatelessWidget {
   final String title;
 
   const _SectionHeading(this.title);
-
-  Widget _buildDivider({bool reverse = false}) {
-    return Container(
-      height: 1,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            reverse ? AppColors.dividerColor : Colors.transparent,
-            reverse ? Colors.transparent : AppColors.dividerColor,
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

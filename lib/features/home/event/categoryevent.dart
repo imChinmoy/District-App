@@ -1,12 +1,17 @@
-import 'dart:convert';
-
 import 'package:district/features/home/event/eventdetail.dart';
+import 'package:district/features/home/for_you/for_you.dart';
 import 'package:district/models/event/event_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class CategoryEventsPage extends StatefulWidget {
+
+final categoryEventsProvider = Provider.family<List<EventModel>, EventCategory>((ref, category) {
+  final events = ref.watch(eventsProvider).value ?? [];
+  return events.where((e) => e.category == category).toList();
+});
+
+class CategoryEventsPage extends ConsumerWidget {
   final EventCategory category;
   final String categoryName;
 
@@ -17,68 +22,22 @@ class CategoryEventsPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<CategoryEventsPage> createState() => _CategoryEventsPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventsAsync = ref.watch(eventsProvider);
+    final filteredEvents = ref.watch(categoryEventsProvider(category));
 
-class _CategoryEventsPageState extends State<CategoryEventsPage> {
-  List<EventModel> allEvents = [];
-  List<EventModel> filteredEvents = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadEvents();
-  }
-
-  Future<void> _loadEvents() async {
-    try {
-      final response =
-          await rootBundle.loadString('assets/event/events.json');
-      final data = json.decode(response);
-      final events = (data['events'] as List)
-          .map((e) => EventModel.fromMap(e))
-          .toList();
-
-      setState(() {
-        allEvents = events;
-        filteredEvents =
-            events.where((e) => e.category == widget.category).toList();
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text(
-          widget.categoryName,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        title: Text(categoryName, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context)),
       ),
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Colors.green),
-            )
-          : filteredEvents.isEmpty
-              ? _buildEmptyState()
-              : _buildEventsList(),
+      body: eventsAsync.when(
+        data: (_) => filteredEvents.isEmpty ? _buildEmptyState() : _buildEventsList(filteredEvents, context),
+        loading: () => const Center(child: CircularProgressIndicator(color: Colors.green)),
+        error: (_, __) => const Center(child: Text('Error loading events', style: TextStyle(color: Colors.white))),
+      ),
     );
   }
 
@@ -89,162 +48,76 @@ class _CategoryEventsPageState extends State<CategoryEventsPage> {
         children: [
           const Icon(Icons.event_busy, color: Colors.grey, size: 80),
           const SizedBox(height: 16),
-          Text(
-            'No ${widget.categoryName.toLowerCase()} events available',
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 16,
-            ),
-          ),
+          Text('No ${categoryName.toLowerCase()} events available', style: const TextStyle(color: Colors.grey, fontSize: 16)),
         ],
       ),
     );
   }
 
-  Widget _buildEventsList() {
+  Widget _buildEventsList(List<EventModel> events, BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: filteredEvents.length,
-      itemBuilder: (context, index) {
-        final event = filteredEvents[index];
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EventDetailPage(event: event),
-              ),
-            );
-          },
-          child: _buildEventListItem(event),
-        );
-      },
+      itemCount: events.length,
+      itemBuilder: (_, index) => GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EventDetailPage(event: events[index]))),
+        child: _buildEventCard(events[index]),
+      ),
     );
   }
 
-  Widget _buildEventListItem(EventModel event) {
+  Widget _buildEventCard(EventModel event) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12),
-      ),
+      decoration: BoxDecoration(color: Colors.grey[900], borderRadius: BorderRadius.circular(12)),
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: const BorderRadius.horizontal(
-              left: Radius.circular(12),
-            ),
+            borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
             child: Image.asset(
-              event.images.isNotEmpty
-                  ? event.images[0]
-                  : 'assets/events/default.jpg',
+              event.images.isNotEmpty ? event.images[0] : '',
               width: 120,
               height: 140,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: 120,
-                height: 140,
-                color: Colors.grey[800],
-                child: const Icon(Icons.event, color: Colors.white54, size: 40),
-              ),
+              errorBuilder: (_, __, ___) => Container(width: 120, height: 140, color: Colors.grey[800], child: const Icon(Icons.event, color: Colors.white54, size: 40)),
             ),
           ),
-
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _getCategoryColor(),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      _getCategoryName(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(color: _getCategoryColor(), borderRadius: BorderRadius.circular(12)),
+                    child: Text(_getCategoryName(), style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 8),
-
-                  Text(
-                    event.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(event.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 8),
-
                   Row(
                     children: [
-                      const Icon(Icons.location_on,
-                          color: Colors.grey, size: 14),
+                      const Icon(Icons.location_on, color: Colors.grey, size: 14),
                       const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          event.location,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 12,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                      Expanded(child: Text(event.location, style: TextStyle(color: Colors.grey[400], fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                   const SizedBox(height: 4),
-
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today,
-                          color: Colors.grey, size: 14),
+                      const Icon(Icons.calendar_today, color: Colors.grey, size: 14),
                       const SizedBox(width: 4),
-                      Text(
-                        DateFormat('MMM dd, yyyy').format(event.startDate),
-                        style: TextStyle(
-                          color: Colors.grey[400],
-                          fontSize: 12,
-                        ),
-                      ),
+                      Text(DateFormat('MMM dd, yyyy').format(event.startDate), style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                     ],
                   ),
                   const SizedBox(height: 8),
-
                   Row(
                     children: [
-                      Text(
-                        event.price == 0 ? 'FREE' : '₹${event.price.toInt()}',
-                        style: const TextStyle(
-                          color: Colors.green,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Text(event.price == 0 ? 'FREE' : '₹${event.price.toInt()}', style: const TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold)),
                       const Spacer(),
                       const Icon(Icons.star, color: Colors.amber, size: 16),
                       const SizedBox(width: 4),
-                      Text(
-                        event.rating.toStringAsFixed(1),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Text(event.rating.toStringAsFixed(1), style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
@@ -257,7 +130,7 @@ class _CategoryEventsPageState extends State<CategoryEventsPage> {
   }
 
   String _getCategoryName() {
-    switch (widget.category) {
+    switch (category) {
       case EventCategory.concert:
         return 'CONCERT';
       case EventCategory.exhibition:
@@ -270,7 +143,7 @@ class _CategoryEventsPageState extends State<CategoryEventsPage> {
   }
 
   Color _getCategoryColor() {
-    switch (widget.category) {
+    switch (category) {
       case EventCategory.concert:
         return Colors.purple[700]!;
       case EventCategory.exhibition:
