@@ -1,3 +1,4 @@
+import 'package:district/features/controllers/program_controller.dart';
 import 'package:district/features/home/event/eventdetail.dart';
 import 'package:district/features/home/for_you/for_you.dart';
 import 'package:district/models/event/event_model.dart';
@@ -7,7 +8,7 @@ import 'package:intl/intl.dart';
 
 
 final categoryEventsProvider = Provider.family<List<EventModel>, EventCategory>((ref, category) {
-  final events = ref.watch(eventsProvider).value ?? [];
+  final events = ref.watch(eventProvider).value ?? [];
   return events.where((e) => e.category == category).toList();
 });
 
@@ -23,7 +24,7 @@ class CategoryEventsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsAsync = ref.watch(eventsProvider);
+    final eventsAsync = ref.watch(eventProvider);
     final filteredEvents = ref.watch(categoryEventsProvider(category));
 
     return Scaffold(
