@@ -5,7 +5,7 @@ import 'package:district/models/event/event_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-
+import '../../controllers/program_controller.dart';
 
 final categoryEventsProvider = Provider.family<List<EventModel>, EventCategory>((ref, category) {
   final events = ref.watch(eventProvider).value ?? [];

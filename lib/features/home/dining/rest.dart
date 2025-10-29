@@ -76,10 +76,8 @@ class RestaurantDetailPage extends ConsumerWidget {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      // Show login required dialog
       _showLoginDialog(context);
     } else {
-      // User is logged in, proceed to booking
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -137,8 +135,8 @@ class RestaurantDetailPage extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context); // Close dialog
-              context.push('/login'); // Navigate to login
+              Navigator.pop(context); 
+              context.push('/login'); 
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,

@@ -150,25 +150,13 @@ class _ProfileState extends ConsumerState<Profile> {
             _sectionTitle('All bookings', textColor),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: _padding),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _bookingCard(
-                    'Table bookings',
-                    Icons.restaurant_menu,
-                    darkBackgroundColor,
-                  ),
-                  _bookingCard(
-                    'Movie tickets',
-                    Icons.movie,
-                    darkBackgroundColor,
-                  ),
-                  _bookingCard(
-                    'Event tickets',
-                    Icons.music_note,
-                    darkBackgroundColor,
-                  ),
-                ],
+              child: Expanded(
+                
+                child: _bookingCard(
+                      'Movie tickets',
+                      Icons.movie,
+                      darkBackgroundColor,
+                    ),
               ),
             ),
 
@@ -306,7 +294,8 @@ class _ProfileState extends ConsumerState<Profile> {
           color: cardColor,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
-            onTap: () => context.push('/home/profile/tableBookings'),
+            
+            onTap: () => context.push('/home/profile/allBookings'),
 
             borderRadius: BorderRadius.circular(12),
             child: Container(

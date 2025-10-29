@@ -83,7 +83,11 @@ class _BookingPageState extends ConsumerState<BookingPage> {
           Expanded(
             child: Text(
               _getPageTitle(),
-              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -97,10 +101,20 @@ class _BookingPageState extends ConsumerState<BookingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.itemName, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+        Text(
+          widget.itemName,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         if (widget.additionalInfo != null) ...[
           const SizedBox(height: 8),
-          Text(widget.additionalInfo!, style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+          Text(
+            widget.additionalInfo!,
+            style: TextStyle(color: Colors.grey[400], fontSize: 14),
+          ),
         ],
       ],
     );
@@ -110,7 +124,14 @@ class _BookingPageState extends ConsumerState<BookingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(_getCountLabel(), style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(
+          _getCountLabel(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -126,7 +147,14 @@ class _BookingPageState extends ConsumerState<BookingPage> {
                 icon: const Icon(Icons.remove_circle_outline, color: Colors.white),
                 onPressed: count > 1 ? () => setState(() => count--) : null,
               ),
-              Text('$count ${_getCountUnit()}', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                '$count ${_getCountUnit()}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               IconButton(
                 icon: const Icon(Icons.add_circle_outline, color: Colors.white),
                 onPressed: count < 20 ? () => setState(() => count++) : null,
@@ -142,7 +170,14 @@ class _BookingPageState extends ConsumerState<BookingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Select Date', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        const Text(
+          'Select Date',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 12),
         InkWell(
           onTap: () => _selectDate(context),
@@ -158,8 +193,13 @@ class _BookingPageState extends ConsumerState<BookingPage> {
                 const Icon(Icons.calendar_today, color: Colors.green),
                 const SizedBox(width: 12),
                 Text(
-                  selectedDate == null ? 'Choose a date' : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
-                  style: TextStyle(color: selectedDate == null ? Colors.grey : Colors.white, fontSize: 16),
+                  selectedDate == null
+                      ? 'Choose a date'
+                      : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
+                  style: TextStyle(
+                    color: selectedDate == null ? Colors.grey : Colors.white,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -173,7 +213,14 @@ class _BookingPageState extends ConsumerState<BookingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Select Time', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        const Text(
+          'Select Time',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 12),
         InkWell(
           onTap: () => _selectTime(context),
@@ -189,8 +236,13 @@ class _BookingPageState extends ConsumerState<BookingPage> {
                 const Icon(Icons.access_time, color: Colors.green),
                 const SizedBox(width: 12),
                 Text(
-                  selectedTime == null ? 'Choose a time' : selectedTime!.format(context),
-                  style: TextStyle(color: selectedTime == null ? Colors.grey : Colors.white, fontSize: 16),
+                  selectedTime == null
+                      ? 'Choose a time'
+                      : selectedTime!.format(context),
+                  style: TextStyle(
+                    color: selectedTime == null ? Colors.grey : Colors.white,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -204,14 +256,25 @@ class _BookingPageState extends ConsumerState<BookingPage> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: selectedDate != null && selectedTime != null ? () => _confirmBooking() : null,
+        onPressed: selectedDate != null && selectedTime != null
+            ? () => _confirmBooking()
+            : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
           disabledBackgroundColor: Colors.grey[800],
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        child: const Text('Confirm Booking', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        child: const Text(
+          'Confirm Booking',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
@@ -224,7 +287,12 @@ class _BookingPageState extends ConsumerState<BookingPage> {
       lastDate: DateTime.now().add(const Duration(days: 90)),
       builder: (context, child) {
         return Theme(
-          data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: Colors.green, surface: Color(0xFF1F1F1F))),
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.green,
+              surface: Color(0xFF1F1F1F),
+            ),
+          ),
           child: child!,
         );
       },
@@ -238,7 +306,12 @@ class _BookingPageState extends ConsumerState<BookingPage> {
       initialTime: TimeOfDay.now(),
       builder: (context, child) {
         return Theme(
-          data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: Colors.green, surface: Color(0xFF1F1F1F))),
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.green,
+              surface: Color(0xFF1F1F1F),
+            ),
+          ),
           child: child!,
         );
       },
@@ -248,31 +321,54 @@ class _BookingPageState extends ConsumerState<BookingPage> {
 
   void _confirmBooking() {
     final user = FirebaseAuth.instance.currentUser;
-  if (user == null || selectedDate == null || selectedTime == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please log in and select date & time.')),
-    );
-    return;
-  }
-    
+    if (user == null || selectedDate == null || selectedTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in and select date & time.'),
+        ),
+      );
+      return;
+    }
+
     final type = _getTypeString();
-      final bookingData = {
-    '${type}Id': widget.itemId,
-    '${type}Name': widget.itemName,
-    'userId': user.uid,
-    'userEmail': user.email ?? '',
-    'userName': user.displayName ?? 'Guest',
-    'date': selectedDate!.toIso8601String(),
-    'time': '${selectedTime!.hour}:${selectedTime!.minute}',
-    'count': count,
-    'bookingTime': DateTime.now().toIso8601String(),
-    'status': 'confirmed',
-  };
-    ref.read(bookingControllerProvider.notifier).addBooking(_getTypeString(), widget.itemId, user.uid , bookingData);
+ 
+    final bookingDateTime = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+
+    final bookingData = {
+      'userId': user.uid,
+      'userEmail': user.email ?? '',
+      'userName': user.displayName ?? 'Guest',
+      '${type}Id': widget.itemId,
+      'itemId': widget.itemId,
+      'bookingTime': DateTime.now().toIso8601String(),
+      'data': {
+        '${type}Name': widget.itemName,
+        'date': bookingDateTime.toIso8601String(),
+        'time': '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}',
+        'count': count,
+        'status': 'confirmed',
+      },
+    };
+
+    ref.read(bookingControllerProvider.notifier).addBooking(
+          type,
+          widget.itemId,
+          user.uid,
+          bookingData,
+        );
 
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(_getSuccessMessage()), backgroundColor: Colors.green),
+      SnackBar(
+        content: Text(_getSuccessMessage()),
+        backgroundColor: Colors.green,
+      ),
     );
   }
 

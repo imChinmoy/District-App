@@ -1,4 +1,5 @@
 import 'package:district/features/home/dining/rest.dart';
+import 'package:district/features/home/bookings.dart';
 import 'package:district/features/home/event/event.dart';
 import 'package:district/features/home/event/eventdetail.dart';
 import 'package:district/features/home/movies/movie.dart';
@@ -18,11 +19,11 @@ import '../features/home/login_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/home/profile.dart';
 import '../features/home/dining/dining.dart';
-import '../features/home/dining/tablebooking.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouterProvider = Provider<GoRouter>((ref) {
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
@@ -45,13 +46,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const Profile(),
             routes: [
               GoRoute(
-                path: 'tableBookings',
-                builder: (context, state) => const TableBookings(),
+                path: 'allBookings',
+                builder: (context, state) => const AllBookingsScreen(),
               ),
             ],
           ),
           
-          // Dining routes
           GoRoute(
             path: 'dining',
             builder: (context, state) => const DiningScreen(),
@@ -76,8 +76,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          
-          // Events routes
+
           GoRoute(
             path: 'events',
             builder: (context, state) => const EventsScreen(),
@@ -103,12 +102,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
           
-          // Movies routes
           GoRoute(
             path: 'movies',
             builder: (context, state) => const MoviesScreen(),
             routes: [
               GoRoute(
+
+                
                 path: 'detail',
                 builder: (context, state) {
                   final movie = state.extra as MovieModel?;
@@ -164,7 +164,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       if (user == null) {
         return '/login';
       }
-     
+      
       if (user != null && location == '/login') {
         return '/home';
       }

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/booking_model.dart';
-
+import 'dart:developer';
 class BookingService {
   static final _db = FirebaseFirestore.instance.collection('Bookings');
 
@@ -26,8 +26,13 @@ class BookingService {
   }
 
   Future<List<BookingModel>> getUserBookings(String userId) async {
-    final snapshot = await _db.where('userId', isEqualTo: userId).get();
+    try{
+      final snapshot = await _db.where('userId', isEqualTo: userId).get();
     return snapshot.docs.map((doc) => BookingModel.fromMap(doc.data(), doc.id)).toList();
+    } catch(e){
+      log(e.toString());
+      return [];
+    }
   }
 
   Future<BookingModel?> getBookingById(String bookingId) async {

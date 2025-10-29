@@ -54,7 +54,6 @@ class EventDetailPage extends ConsumerWidget {
           child: Icon(Icons.restaurant, color: Colors.white54, size: 80)),
     );
   }
-  // Widget _buildSliverAppBar(BuildContext context) {
 
     
 
@@ -213,10 +212,8 @@ void _handleBooking(BuildContext context) {
   final user = FirebaseAuth.instance.currentUser;
 
   if (user == null) {
-    // Show login required dialog
     _showLoginDialog(context);
   } else {
-    // User is logged in, proceed to booking
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -274,8 +271,8 @@ void _showLoginDialog(BuildContext context) {
         ),
         ElevatedButton(
           onPressed: () {
-            Navigator.pop(context); // Close dialog
-            context.push('/login'); // Navigate to login
+            Navigator.pop(context);
+            context.push('/login'); 
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,

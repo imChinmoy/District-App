@@ -7,18 +7,19 @@ import 'package:district/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+
 
 typedef FallbackImageBuilder = Widget Function();
 
-// Search Providers
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
 final searchEventsProvider = Provider<List<EventModel>>((ref) {
   final query = ref.watch(searchQueryProvider).toLowerCase();
   if (query.isEmpty) return [];
-  return (ref.watch(eventProvider).value ?? [])
-      .where((e) => e.name.toLowerCase().contains(query) || e.location.toLowerCase().contains(query))
-      .toList();
+
+  return (ref.watch(eventProvider).value ?? []).where((e) => e.name.toLowerCase().contains(query) || e.location.toLowerCase().contains(query)).toList();
+
 });
 
 final searchMoviesProvider = Provider<List<MovieModel>>((ref) {
@@ -136,7 +137,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 }
 
-// Section Header
+
 class _SectionHeader extends StatelessWidget {
   final String title;
   final int count;
@@ -158,7 +159,6 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// Events List
 class _EventsList extends StatelessWidget {
   final List<EventModel> events;
   const _EventsList(this.events);
@@ -229,7 +229,6 @@ class _EventCard extends StatelessWidget {
   }
 }
 
-// Movies List
 class _MoviesList extends StatelessWidget {
   final List<MovieModel> movies;
   const _MoviesList(this.movies);
@@ -302,7 +301,7 @@ class _MovieCard extends StatelessWidget {
   }
 }
 
-// Dining List
+
 class _DiningList extends StatelessWidget {
   final List<DiningModel> restaurants;
   const _DiningList(this.restaurants);
@@ -371,7 +370,7 @@ class _DiningCard extends StatelessWidget {
   }
 }
 
-// Artists List
+
 class _ArtistsList extends StatelessWidget {
   final List<ArtistModel> artists;
   const _ArtistsList(this.artists);
@@ -413,7 +412,7 @@ class _ArtistCard extends StatelessWidget {
   }
 }
 
-// Empty States
+
 class _EmptySearch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -448,7 +447,7 @@ class _NoResults extends StatelessWidget {
   }
 }
 
-// Image Loader
+
 class _ImageLoader extends StatelessWidget {
   final String? imageUrl;
   final double height;
