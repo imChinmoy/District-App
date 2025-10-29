@@ -32,7 +32,7 @@ class AppDatabase {
   }
 
   Future<EventModel?> findEvent(String id) async {
-    final doc = await _db.collection('Events').doc(id).get();
+    final doc = await _db.collection('events').doc(id).get();
     return doc.exists ? EventModel.fromMap(doc.data()!) : null;
   }
 
@@ -78,7 +78,7 @@ class AppDatabase {
   }
 
   Future<MovieModel?> findMovie(String id) async {
-    final doc = await _db.collection('Movies').doc(id).get();
+    final doc = await _db.collection('movies').doc(id).get();
     return doc.exists ? MovieModel.fromMap(doc.data()!) : null;
   }
 }

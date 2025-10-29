@@ -14,9 +14,4 @@ class MoodCategory {
     title: json['title'] as String? ?? 'Untitled Mood',
     imageUrl: json['imageUrl'] as String? ?? 'assets/placeholder.png',
   );
-  factory MoodCategory.fromJson(Map<String, dynamic> json) => MoodCategory(
-    id: json['id'] as String? ?? 'mood_unknown',
-    title: json['title'] as String? ?? 'Untitled Mood',
-    imageUrl: json['imageUrl'] as String? ?? 'assets/placeholder.png',
-  );
 }

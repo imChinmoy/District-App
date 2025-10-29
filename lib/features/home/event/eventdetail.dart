@@ -3,6 +3,8 @@ import 'package:district/models/event/event_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 
 final favoriteEventsProvider = StateProvider<Set<String>>((ref) => {});
 
@@ -181,18 +183,123 @@ class EventDetailPage extends ConsumerWidget {
   }
 
   Widget _buildBookButton(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.grey[900],
-      child: SafeArea(
-        child: ElevatedButton(
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BookingPage(itemId: event.id, itemName: event.name, bookingType: BookingType.event, additionalInfo: event.location))),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.green, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: const Text('Book Now', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+  return Container(
+    padding: const EdgeInsets.all(16),
+    color: Colors.grey[900],
+    child: SafeArea(
+      child: ElevatedButton(
+        onPressed: () => _handleBooking(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: const Text(
+          'Book Tickets',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void _handleBooking(BuildContext context) {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) {
+    // Show login required dialog
+    _showLoginDialog(context);
+  } else {
+    // User is logged in, proceed to booking
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookingPage(
+          itemId: event.id,
+          itemName: event.name,
+          bookingType: BookingType.event,
+          additionalInfo: event.location,
         ),
       ),
     );
   }
+}
+
+void _showLoginDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: Colors.grey[900],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      title: Row(
+        children: const [
+          Icon(Icons.lock_outline, color: Colors.white, size: 24),
+          SizedBox(width: 12),
+          Text(
+            'Login Required',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+      content: const Text(
+        'You need to be logged in to book event tickets. Please login or create an account to continue.',
+        style: TextStyle(
+          color: Colors.white70,
+          fontSize: 15,
+          height: 1.5,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 16,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context); // Close dialog
+            context.push('/login'); // Navigate to login
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 12,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: const Text(
+            'Login',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   String _getCategoryName() {
     switch (event.category) {

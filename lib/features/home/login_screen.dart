@@ -4,6 +4,7 @@ import 'package:district/features/auth/verification.dart';
 import 'package:district/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import 'package:go_router/go_router.dart';
@@ -111,7 +112,7 @@ class LoginScreen extends ConsumerWidget {
                                     const Duration(milliseconds: 500),
                                   );
                                   if (context.mounted) {
-                                    context.go('/home');
+                                    context.go('/guest');
                                   }
                                   ref.read(isLoadingProvider.notifier).state =
                                       false;

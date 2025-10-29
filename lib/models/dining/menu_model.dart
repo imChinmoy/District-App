@@ -26,6 +26,7 @@ class MenuModel {
         'id': id,
         'name': name,
         'price': price,
+        'description': description,
         'category': category.name,
         'isVeg': isVeg,
         'isAvailable': isAvailable,
@@ -42,6 +43,7 @@ class MenuModel {
         ),
         isVeg: map['isVeg'] ?? false,
         isAvailable: map['isAvailable'] ?? true,
-        imageUrl: map['imageUrl'] ?? '', description: '',
+        imageUrl: map['imageUrl'] ?? '', 
+        description: map['description'] ?? 'No description available',
       );
 }

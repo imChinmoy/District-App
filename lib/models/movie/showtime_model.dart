@@ -27,7 +27,7 @@ class ShowtimeModel {
         'id': id,
         'cinemaName': cinemaName,
         'address': address,
-        'time': time,
+        'time': Timestamp.fromDate(time),
         'price': price,
         'availableSeats': availableSeats,
         'totalSeats': totalSeats,

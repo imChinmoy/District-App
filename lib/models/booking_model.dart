@@ -47,7 +47,7 @@ class BookingModel {
         ),
         quantity: map['quantity'] ?? 1,
         totalPrice: (map['totalPrice'] ?? 0).toDouble(),
-        bookingDate: DateTime.parse(map['bookingDate']),
+        bookingDate: map['bookingDate'] != null ? DateTime.parse(map['bookingDate']) : DateTime.now(),
         createdAt: DateTime.parse(map['createdAt']),
         status: BookingStatus.values.firstWhere(
           (e) => e.name == map['status'],
