@@ -3,6 +3,8 @@ import 'package:district/models/movie/movie_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 
 final bookmarkedMoviesProvider = StateProvider<Set<String>>((ref) => {});
 
@@ -575,58 +577,129 @@ class MovieDetailPage extends ConsumerWidget {
   }
 
   Widget _buildBookButton(BuildContext context) {
-    return Container(
-// <<<<<<< HEAD
-      padding: EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        MediaQuery.of(context).padding.bottom + 16,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.5),
-            blurRadius: 15,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MovieBookingPage(movie: movie),
-            ),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFE50914),
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+  return Container(
+    padding: EdgeInsets.fromLTRB(
+      16,
+      16,
+      16,
+      MediaQuery.of(context).padding.bottom + 16,
+    ),
+    decoration: BoxDecoration(
+      color: Colors.black,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.5),
+          blurRadius: 15,
+          offset: const Offset(0, -5),
         ),
-        child: const Text(
-          'BOOK TICKETS',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
-          ),
+      ],
+    ),
+    child: ElevatedButton(
+      onPressed: () => _handleBooking(context),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFE50914),
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
-// =======
-//       padding: const EdgeInsets.all(16),
-//       color: Colors.grey[900],
-//       child: ElevatedButton(
-//         onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MovieBookingPage(movie: movie))),
-//         style: ElevatedButton.styleFrom(backgroundColor: Colors.green, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-//         child: const Text('Book Tickets', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-// >>>>>>> 25e9c2302838ffa38bef29b0a279b323df89c3de
+      ),
+      child: const Text(
+        'BOOK TICKETS',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
+        ),
+      ),
+    ),
+  );
+}
+
+void _handleBooking(BuildContext context) {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) {
+    // Show login required dialog
+    _showLoginDialog(context);
+  } else {
+    // User is logged in, proceed to booking
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MovieBookingPage(movie: movie),
       ),
     );
   }
+}
+
+void _showLoginDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: Colors.grey[900],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      title: Row(
+        children: const [
+          Icon(Icons.lock_outline, color: Colors.white, size: 24),
+          SizedBox(width: 12),
+          Text(
+            'Login Required',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+      content: const Text(
+        'You need to be logged in to book movie tickets. Please login or create an account to continue.',
+        style: TextStyle(
+          color: Colors.white70,
+          fontSize: 15,
+          height: 1.5,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 16,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context); // Close dialog
+            context.push('/login'); // Navigate to login
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFE50914), // Netflix red
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 12,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: const Text(
+            'Login',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }

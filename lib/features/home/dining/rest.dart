@@ -1,7 +1,10 @@
 import 'package:district/models/dining/dining_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import '../booking_page.dart';
+
 
 class RestaurantDetailPage extends ConsumerWidget {
   final DiningModel restaurant;
@@ -48,41 +51,126 @@ class RestaurantDetailPage extends ConsumerWidget {
       color: Colors.grey[900],
       child: SafeArea(
         child: ElevatedButton(
-          onPressed: () {
-           Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BookingPage(
-                itemId: restaurant.id,
-                itemName: restaurant.name,
-                bookingType: BookingType.dining,
-                additionalInfo: restaurant.address,
-                ),
-              ),
-            );
-          },
+          onPressed: () => _handleBooking(context),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
             padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           child: const Text(
             'Book Now',
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
     );
   }
 
-  
-  Widget _buildSliverAppBar(BuildContext context) {
-  
-  void _favorite() {
-    print('marked');
+  void _handleBooking(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Show login required dialog
+      _showLoginDialog(context);
+    } else {
+      // User is logged in, proceed to booking
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BookingPage(
+            itemId: restaurant.id,
+            itemName: restaurant.name,
+            bookingType: BookingType.dining,
+            additionalInfo: restaurant.address,
+          ),
+        ),
+      );
+    }
   }
-  final imageUrl = restaurant.images.isNotEmpty ? restaurant.images[0] : '';
-  final isNetworkImage = imageUrl.startsWith('http');
-  
+
+  void _showLoginDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: const [
+            Icon(Icons.lock_outline, color: Colors.white, size: 24),
+            SizedBox(width: 12),
+            Text(
+              'Login Required',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: const Text(
+          'You need to be logged in to book a table. Please login or create an account to continue.',
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 15,
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 16,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              context.push('/login'); // Navigate to login
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 12,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Login',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSliverAppBar(BuildContext context) {
+    void _favorite() {
+      print('marked');
+    }
+
+    final imageUrl = restaurant.images.isNotEmpty ? restaurant.images[0] : '';
+    final isNetworkImage = imageUrl.startsWith('http');
 
     return SliverAppBar(
       expandedHeight: 300,
@@ -134,6 +222,7 @@ class RestaurantDetailPage extends ConsumerWidget {
       ),
     );
   }
+
   Widget _buildPlaceholder() {
     return Container(
       color: Colors.grey[900],
@@ -141,7 +230,6 @@ class RestaurantDetailPage extends ConsumerWidget {
           child: Icon(Icons.restaurant, color: Colors.white54, size: 80)),
     );
   }
-
 
   Widget _buildHeader() {
     return Column(
@@ -395,6 +483,7 @@ class RestaurantDetailPage extends ConsumerWidget {
       ),
     );
   }
+
   Widget _buildMenuPlaceholder() {
     return Container(
       width: 80,
@@ -495,4 +584,3 @@ class RestaurantDetailPage extends ConsumerWidget {
     );
   }
 }
-
