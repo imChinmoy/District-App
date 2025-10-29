@@ -54,41 +54,66 @@ class LocationService {
   }
 
   Future<LocationData> _getAddressFromCoordinates(
-    double lat,
-    double lng,
-  ) async {
-    try {
-      List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(lat, lng);
+  double lat,
+  double lng,
+) async {
+  try {
+    List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(lat, lng);
+    
+    if (placemarks.isNotEmpty) {
+      geo.Placemark place = placemarks[0];
+
+      String locationName = '';
       
-      if (placemarks.isNotEmpty) {
-        geo.Placemark place = placemarks[0];
-        
-        String locationName = place.subLocality ?? place.locality ?? 'Unknown Location';
-        String subLocation = '${place.subLocality ?? ''}, ${place.locality ?? ''}, ${place.administrativeArea ?? ''}'.trim();
-
-        subLocation = subLocation.replaceAll(RegExp(r',\s*,'), ',').trim();
-        if (subLocation.startsWith(',')) {
-          subLocation = subLocation.substring(1).trim();
-        }
-
-        return LocationData(
-          latitude: lat,
-          longitude: lng,
-          locationName: locationName,
-          subLocation: subLocation,
-        );
+      if (place.name != null && place.name!.isNotEmpty) {
+        locationName = place.name!;
+      } else if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+        locationName = place.subLocality!;
+      } else if (place.locality != null && place.locality!.isNotEmpty) {
+        locationName = place.locality!;
+      } else if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+        locationName = place.administrativeArea!;
+      } else {
+        locationName = 'Unknown Location';
       }
-    } catch (e) {
-      print('Error in reverse geocoding: $e');
-    }
+      
+      List<String> addressParts = [];
+      
+      if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+        addressParts.add(place.subLocality!);
+      }
+      if (place.locality != null && place.locality!.isNotEmpty) {
+        addressParts.add(place.locality!);
+      }
+      if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+        addressParts.add(place.administrativeArea!);
+      }
+      if (place.country != null && place.country!.isNotEmpty) {
+        addressParts.add(place.country!);
+      }
+      
+      String subLocation = addressParts.isNotEmpty 
+          ? addressParts.join(', ')
+          : 'Lat: ${lat.toStringAsFixed(4)}, Lng: ${lng.toStringAsFixed(4)}';
 
-    return LocationData(
-      latitude: lat,
-      longitude: lng,
-      locationName: 'Location',
-      subLocation: 'Lat: ${lat.toStringAsFixed(4)}, Lng: ${lng.toStringAsFixed(4)}',
-    );
+      return LocationData(
+        latitude: lat,
+        longitude: lng,
+        locationName: locationName,
+        subLocation: subLocation,
+      );
+    }
+  } catch (e) {
+    print('Error in reverse geocoding: $e');
   }
+
+  return LocationData(
+    latitude: lat,
+    longitude: lng,
+    locationName: 'Location',
+    subLocation: 'Lat: ${lat.toStringAsFixed(4)}, Lng: ${lng.toStringAsFixed(4)}',
+  );
+}
 
   Stream<LocationData> getLocationStream() async* {
     final hasPermission = await checkAndRequestPermission();
